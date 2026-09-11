@@ -1,0 +1,181 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: #050b12;
+    color: #e8f7ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 92%;
+    max-width: 1000px;
+    min-height: 90vh;
+    padding: 35px;
+    background: #091521;
+    border: 1px solid #1e9bd1;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 170, 255, 0.25);
+    text-align: center;
+}
+
+header h1 {
+    font-size: 42px;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #72d7ff;
+    letter-spacing: 2px;
+    font-size: 14px;
+}
+
+.status {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: 1px solid #29d37d;
+    border-radius: 20px;
+    color: #29d37d;
+    font-weight: bold;
+}
+
+main {
+    margin-top: 55px;
+}
+
+main h2 {
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.modes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.modes button {
+    min-height: 150px;
+    padding: 20px;
+    border: 1px solid #238fc0;
+    border-radius: 15px;
+    background: #0c1d2c;
+    color: #e8f7ff;
+    font-size: 45px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.modes button:hover {
+    transform: translateY(-5px);
+    background: #102b40;
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.35);
+}
+
+.modes button span {
+    display: block;
+    margin-top: 12px;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+#selected {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #07111b;
+    color: #72d7ff;
+}
+
+footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #18384a;
+    color: #7f9eac;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    body {
+        align-items: flex-start;
+        padding: 12px 0;
+    }
+
+    .container {
+        width: 94%;
+        min-height: auto;
+        padding: 16px 12px;
+        border-radius: 14px;
+    }
+
+    header h1 {
+        font-size: 24px;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+    }
+
+    .subtitle {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
+    .status {
+        margin-top: 10px;
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    main {
+        margin-top: 25px;
+    }
+
+    main h2 {
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+
+    .modes {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .modes button {
+        min-height: 90px;
+        padding: 10px;
+        border-radius: 11px;
+        font-size: 30px;
+    }
+
+    .modes button span {
+        margin-top: 6px;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+    }
+
+    #selected {
+        margin-top: 15px;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    footer {
+        margin-top: 25px;
+        padding-top: 12px;
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+}

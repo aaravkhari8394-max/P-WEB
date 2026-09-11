@@ -1,0 +1,75 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JARVIS P.WEB</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>🤖 JARVIS P.WEB</h1>
+            <p class="subtitle">PUBLIC ROBOT CONTROL SYSTEM</p>
+
+            <div class="status">
+                ● SYSTEM READY
+            </div>
+        </header>
+
+
+        <main>
+
+            <h2>Select Control Mode</h2>
+
+            <div class="modes">
+
+                <button onclick="selectMode('CAR')">
+                    🚗
+                    <span>CAR CONTROL</span>
+                </button>
+
+                <button onclick="selectMode('CAMERA')">
+                    🚗📷
+                    <span>CAR + CAMERA</span>
+                </button>
+
+                <button onclick="selectMode('SENSOR')">
+                    🚗📷📡
+                    <span>CAR + CAMERA + SENSORS</span>
+                </button>
+
+                <button onclick="selectMode('MIC')">
+                    🚗📡🎤
+                    <span>CAR + SENSORS + MIC</span>
+                </button>
+
+            </div>
+
+
+            <div id="selected">
+                No control mode selected.
+            </div>
+
+        </main>
+
+
+        <footer>
+            MADE BY AARAV KHARI
+        </footer>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
+```
+
