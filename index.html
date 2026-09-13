@@ -1,75 +1,319 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>JARVIS P.WEB</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS P.WEB</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="container">
+<div class="shell">
 
-        <header>
-            <h1>🤖 JARVIS P.WEB</h1>
-            <p class="subtitle">PUBLIC ROBOT CONTROL SYSTEM</p>
+  <!-- TOP NAVIGATION -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">P</div>
 
-            <div class="status">
-                ● SYSTEM READY
-            </div>
-        </header>
+      <div>
+        <h1>P.WEB</h1>
+        <p>JARVIS PUBLIC CONTROL SYSTEM</p>
+      </div>
+    </div>
 
-
-        <main>
-
-            <h2>Select Control Mode</h2>
-
-            <div class="modes">
-
-                <button onclick="selectMode('CAR')">
-                    🚗
-                    <span>CAR CONTROL</span>
-                </button>
-
-                <button onclick="selectMode('CAMERA')">
-                    🚗📷
-                    <span>CAR + CAMERA</span>
-                </button>
-
-                <button onclick="selectMode('SENSOR')">
-                    🚗📷📡
-                    <span>CAR + CAMERA + SENSORS</span>
-                </button>
-
-                <button onclick="selectMode('MIC')">
-                    🚗📡🎤
-                    <span>CAR + SENSORS + MIC</span>
-                </button>
-
-            </div>
+    <div class="top-status">
+      <span></span>
+      SYSTEM READY
+    </div>
+  </header>
 
 
-            <div id="selected">
-                No control mode selected.
-            </div>
+  <!-- HERO -->
+  <section class="hero">
 
-        </main>
+    <div>
+      <div class="eyebrow">
+        J.A.R.V.I.S // PUBLIC INTERFACE
+      </div>
+
+      <h2>
+        Control the <strong>machine.</strong>
+      </h2>
+
+      <p>
+        Select a control mode and access the robot interface.
+      </p>
+    </div>
+
+    <div class="hero-orb">
+      J
+    </div>
+
+  </section>
 
 
-        <footer>
-            MADE BY AARAV KHARI
-        </footer>
+  <!-- MAIN GRID -->
+  <main class="grid">
+
+    <!-- CAR STATUS -->
+    <section class="card">
+
+      <div class="head">
+
+        <div>
+          <span class="label">CAR STATUS</span>
+          <h3>JARVIS CAR</h3>
+        </div>
+
+        <span class="online">
+          ● ONLINE
+        </span>
+
+      </div>
+
+
+      <div class="car">
+
+        <div class="scan"></div>
+
+        <div class="car-icon">
+          🚘
+        </div>
+
+        <div class="ring"></div>
+
+      </div>
+
+
+      <div class="telemetry">
+
+        <div>
+          <span>MODE</span>
+          <b id="current-mode">CAR</b>
+        </div>
+
+        <div>
+          <span>LINK</span>
+          <b>READY</b>
+        </div>
+
+        <div>
+          <span>CONTROL</span>
+          <b>MANUAL</b>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CONTROL MODES -->
+    <section class="card">
+
+      <div class="head">
+
+        <div>
+          <span class="label">
+            CONTROL MODES
+          </span>
+
+          <h3>
+            Choose your interface
+          </h3>
+        </div>
+
+      </div>
+
+
+      <div class="modes">
+
+        <button
+          class="mode active"
+          onclick="selectMode('CAR')"
+        >
+
+          <i>🚗</i>
+
+          <span>
+            <b>CAR CONTROL</b>
+            <small>Movement controls</small>
+          </span>
+
+          <em>01</em>
+
+        </button>
+
+
+        <button
+          class="mode"
+          onclick="selectMode('CAMERA')"
+        >
+
+          <i>📷</i>
+
+          <span>
+            <b>CAR + CAMERA</b>
+            <small>Robot camera access</small>
+          </span>
+
+          <em>02</em>
+
+        </button>
+
+
+        <button
+          class="mode"
+          onclick="selectMode('SENSOR')"
+        >
+
+          <i>📡</i>
+
+          <span>
+            <b>CAR + CAMERA + SENSORS</b>
+            <small>Environment telemetry</small>
+          </span>
+
+          <em>03</em>
+
+        </button>
+
+
+        <button
+          class="mode"
+          onclick="selectMode('MIC')"
+        >
+
+          <i>🎤</i>
+
+          <span>
+            <b>CAR + SENSORS + MIC</b>
+            <small>Robot voice interface</small>
+          </span>
+
+          <em>04</em>
+
+        </button>
+
+      </div>
+
+
+      <div
+        id="selected"
+        class="selection"
+      >
+        🚗 CAR CONTROL selected.
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- CONTROL DECK -->
+  <section class="card controls-card">
+
+    <div class="head">
+
+      <div>
+        <span class="label">
+          CONTROL DECK
+        </span>
+
+        <h3>
+          Manual navigation
+        </h3>
+      </div>
+
+      <span class="tag">
+        P.WEB
+      </span>
 
     </div>
 
 
-    <script src="app.js"></script>
+    <div class="controls">
+
+      <button
+        id="btn-F"
+        onclick="sendCarCommand('F')"
+      >
+        ▲
+        <small>FORWARD</small>
+      </button>
+
+
+      <button
+        id="btn-L"
+        onclick="sendCarCommand('L')"
+      >
+        ◀
+        <small>LEFT</small>
+      </button>
+
+
+      <button
+        id="btn-S"
+        class="stop"
+        onclick="sendCarCommand('S')"
+      >
+        ■
+        <small>STOP</small>
+      </button>
+
+
+      <button
+        id="btn-R"
+        onclick="sendCarCommand('R')"
+      >
+        ▶
+        <small>RIGHT</small>
+      </button>
+
+
+      <button
+        id="btn-B"
+        onclick="sendCarCommand('B')"
+      >
+        ▼
+        <small>BACKWARD</small>
+      </button>
+
+    </div>
+
+
+    <p class="note">
+      Movement interface ready for the robot-control layer.
+    </p>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer>
+
+    <span>
+      JARVIS P.WEB
+    </span>
+
+    <span>
+      SMARTER • FASTER • TOGETHER
+    </span>
+
+    <span>
+      v0.2
+    </span>
+
+    <span>
+      MADE BY AARAV KHARI
+    </span>
+
+  </footer>
+
+</div>
+
+
+<script src="app.js"></script>
 
 </body>
 </html>
-```
-
