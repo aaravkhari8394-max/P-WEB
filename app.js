@@ -1,5 +1,6 @@
 // =========================================
-// JARVIS P.WEB — CONTROL SYSTEM
+// JARVIS P.WEB
+// CONTROL ENGINE
 // =========================================
 
 let sessionId =
@@ -8,22 +9,19 @@ let sessionId =
 
 
 // =========================================
-// CONFIGURATION
+// CONFIG
 // =========================================
 
-// Communication Core
-// Local development only.
-// Public deployment ke liye later secure HTTPS endpoint use hoga.
-const CORE_URL = "http://192.168.1.9:8000";
-
-// Universal robot endpoint.
-// User apne robot ke Wi-Fi se connected hone ke baad
-// compatible ESP8266 robot ko local network par access karega.
+// Temporary local robot address.
+// Kal ESP8266 Wi-Fi test ke time use hoga.
 const ROBOT_URL = "http://192.168.4.1";
 
+// Temporary Communication Core address.
+const CORE_URL = "http://192.168.1.9:8000";
+
 
 // =========================================
-// DEVICE INFORMATION
+// DEVICE INFO
 // =========================================
 
 function getDeviceInfo() {
@@ -31,28 +29,25 @@ function getDeviceInfo() {
     return {
         platform: navigator.platform || "Unknown",
 
-        userAgent:
-            navigator.userAgent || "Unknown",
+        userAgent: navigator.userAgent || "Unknown",
 
-        language:
-            navigator.language || "Unknown",
+        language: navigator.language || "Unknown",
 
         screen:
-            `${screen.width}x${screen.height}`,
+            `${window.screen.width}x${window.screen.height}`,
 
         timezone:
             Intl.DateTimeFormat()
                 .resolvedOptions()
                 .timeZone || "Unknown",
 
-        sessionId:
-            sessionId
+        sessionId: sessionId
     };
 }
 
 
 // =========================================
-// COMMUNICATION CORE
+// SEND EVENT TO COMMUNICATION CORE
 // =========================================
 
 async function sendEvent(event, mode = null) {
@@ -92,61 +87,72 @@ async function sendEvent(event, mode = null) {
 
 
 // =========================================
-// MODE SELECTION
+// MODE DATA
+// =========================================
+
+const modes = {
+
+    CAR: {
+        title: "CAR CONTROL",
+        camera: false,
+        mic: false,
+        sensor: false
+    },
+
+    CAMERA: {
+        title: "CAR CONTROL / CAMERA",
+        camera: true,
+        mic: false,
+        sensor: false
+    },
+
+    MIC: {
+        title: "CAR CONTROL / CAMERA / MIC",
+        camera: true,
+        mic: true,
+        sensor: false
+    },
+
+    SENSOR: {
+        title:
+            "CAR CONTROL / CAMERA / MIC / SENSOR",
+        camera: true,
+        mic: true,
+        sensor: true
+    }
+
+};
+
+
+// =========================================
+// SELECT MODE
 // =========================================
 
 function selectMode(mode) {
 
-    const modeData = {
+    const selected = modes[mode];
 
-        CAR: {
-            title: "CAR CONTROL",
-            camera: false,
-            mic: false,
-            sensor: false
-        },
-
-        CAMERA: {
-            title: "CAR CONTROL / CAMERA",
-            camera: true,
-            mic: false,
-            sensor: false
-        },
-
-        MIC: {
-            title: "CAR CONTROL / CAMERA / MIC",
-            camera: true,
-            mic: true,
-            sensor: false
-        },
-
-        SENSOR: {
-            title:
-                "CAR CONTROL / CAMERA / MIC / SENSOR",
-
-            camera: true,
-            mic: true,
-            sensor: true
-        }
-
-    };
+    if (!selected) {
+        return;
+    }
 
 
-    const selected = modeData[mode];
-
-    if (!selected) return;
-
-
-    // Mode screen hide
-    document
-        .getElementById("modeScreen")
-        .classList.remove("active");
-
+    // Opening screen hide
+    const modeScreen =
+        document.getElementById("modeScreen");
 
     // Control screen show
-    document
-        .getElementById("controlScreen")
-        .classList.add("active");
+    const controlScreen =
+        document.getElementById("controlScreen");
+
+
+    if (modeScreen) {
+        modeScreen.classList.remove("active");
+    }
+
+    if (controlScreen) {
+        controlScreen.classList.add("active");
+    }
 
 
     // Title
@@ -156,19 +162,20 @@ function selectMode(mode) {
         );
 
     if (title) {
-        title.textContent = selected.title;
+        title.textContent =
+            selected.title;
     }
 
 
     // Camera
-    const cameraPanel =
+    const camera =
         document.getElementById(
             "cameraPanel"
         );
 
-    if (cameraPanel) {
+    if (camera) {
 
-        cameraPanel.classList.toggle(
+        camera.classList.toggle(
             "hidden",
             !selected.camera
         );
@@ -176,15 +183,15 @@ function selectMode(mode) {
     }
 
 
-    // Mic
-    const micPanel =
+    // Microphone
+    const mic =
         document.getElementById(
             "micPanel"
         );
 
-    if (micPanel) {
+    if (mic) {
 
-        micPanel.classList.toggle(
+        mic.classList.toggle(
             "hidden",
             !selected.mic
         );
@@ -192,15 +199,15 @@ function selectMode(mode) {
     }
 
 
-    // Sensor
-    const sensorPanel =
+    // Sensors
+    const sensor =
         document.getElementById(
             "sensorPanel"
         );
 
-    if (sensorPanel) {
+    if (sensor) {
 
-        sensorPanel.classList.toggle(
+        sensor.classList.toggle(
             "hidden",
             !selected.sensor
         );
@@ -217,21 +224,36 @@ function selectMode(mode) {
 
 
 // =========================================
-// BACK BUTTON
+// BACK
 // =========================================
 
 function goBack() {
 
     stopCar();
 
-    document
-        .getElementById("controlScreen")
-        .classList.remove("active");
+
+    const controlScreen =
+        document.getElementById(
+            "controlScreen"
+        );
+
+    const modeScreen =
+        document.getElementById(
+            "modeScreen"
+        );
 
 
-    document
-        .getElementById("modeScreen")
-        .classList.add("active");
+    if (controlScreen) {
+        controlScreen.classList.remove(
+            "active"
+        );
+    }
+
+    if (modeScreen) {
+        modeScreen.classList.add(
+            "active"
+        );
+    }
 
 
     sendEvent(
@@ -259,10 +281,8 @@ async function testRobotConnection() {
 
 
     if (status) {
-
         status.textContent =
-            "TESTING ROBOT CONNECTION...";
-
+            "TESTING ROBOT...";
     }
 
 
@@ -278,48 +298,39 @@ async function testRobotConnection() {
             );
 
 
-        if (response.ok) {
-
-            if (status) {
-
-                status.textContent =
-                    "ROBOT CONNECTION DETECTED";
-
-            }
-
-            if (text) {
-
-                text.textContent =
-                    "Compatible robot endpoint responded.";
-
-            }
-
-        } else {
-
+        if (!response.ok) {
             throw new Error(
-                "Robot did not respond."
+                "Robot unavailable"
             );
-
         }
+
+
+        if (status) {
+            status.textContent =
+                "ROBOT CONNECTION DETECTED";
+        }
+
+        if (text) {
+            text.textContent =
+                "Robot responded successfully.";
+        }
+
 
     } catch (error) {
 
         if (status) {
-
             status.textContent =
                 "ROBOT NOT DETECTED";
-
         }
 
         if (text) {
-
             text.textContent =
-                "Make sure your phone/laptop is connected to your robot's Wi-Fi network.";
-
+                "Connect your phone/laptop to the robot Wi-Fi first.";
         }
 
+
         console.log(
-            "Robot connection test failed:",
+            "Robot test:",
             error
         );
 
@@ -329,16 +340,16 @@ async function testRobotConnection() {
 
 
 // =========================================
-// CAR COMMAND
+// SEND CAR COMMAND
 // =========================================
 
 async function sendCarCommand(command) {
 
-    const allowedCommands =
+    const allowed =
         ["F", "B", "L", "R", "S"];
 
 
-    if (!allowedCommands.includes(command)) {
+    if (!allowed.includes(command)) {
         return;
     }
 
@@ -350,7 +361,8 @@ async function sendCarCommand(command) {
 
 
     // Button animation
-    const btnMap = {
+
+    const buttonIds = {
 
         F: "btn-F",
 
@@ -365,33 +377,30 @@ async function sendCarCommand(command) {
     };
 
 
-    const targetButton =
+    const button =
         document.getElementById(
-            btnMap[command]
+            buttonIds[command]
         );
 
 
-    if (targetButton) {
+    if (button) {
 
-        targetButton.classList.add(
+        button.classList.add(
             "active-key"
         );
 
-
         setTimeout(() => {
 
-            targetButton.classList.remove(
+            button.classList.remove(
                 "active-key"
             );
 
-        }, 180);
+        }, 160);
 
     }
 
 
-    // =====================================
-    // SEND COMMAND TO ESP8266
-    // =====================================
+    // Send to ESP8266
 
     try {
 
@@ -408,14 +417,14 @@ async function sendCarCommand(command) {
         if (!response.ok) {
 
             throw new Error(
-                "Robot command rejected."
+                "Robot rejected command"
             );
 
         }
 
 
         console.log(
-            "ROBOT COMMAND SENT:",
+            "COMMAND SENT:",
             command
         );
 
@@ -430,7 +439,6 @@ async function sendCarCommand(command) {
     }
 
 
-    // Communication Core event
     sendEvent(
         "CAR_COMMAND",
         "CAR"
@@ -451,14 +459,13 @@ function stopCar() {
 
 
 // =========================================
-// KEYBOARD CONTROL
+// KEYBOARD
 // =========================================
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
-        // Prevent repeated commands
         if (event.repeat) {
             return;
         }
@@ -467,27 +474,20 @@ document.addEventListener(
         const keyMap = {
 
             ArrowUp: "F",
-
             ArrowDown: "B",
-
             ArrowLeft: "L",
-
             ArrowRight: "R",
 
             w: "F",
-
             W: "F",
 
             s: "B",
-
             S: "B",
 
             a: "L",
-
             A: "L",
 
             d: "R",
-
             D: "R",
 
             " ": "S"
@@ -499,27 +499,28 @@ document.addEventListener(
             keyMap[event.key];
 
 
-        if (command) {
-
-            event.preventDefault();
-
-            sendCarCommand(
-                command
-            );
-
+        if (!command) {
+            return;
         }
+
+
+        event.preventDefault();
+
+        sendCarCommand(
+            command
+        );
 
     }
 );
 
 
 // =========================================
-// KEY RELEASE = STOP
+// KEY RELEASE
 // =========================================
 
 document.addEventListener(
     "keyup",
-    function(event) {
+    function (event) {
 
         const movementKeys = [
 
@@ -530,10 +531,13 @@ document.addEventListener(
 
             "w",
             "W",
+
             "s",
             "S",
+
             "a",
             "A",
+
             "d",
             "D"
 
@@ -555,33 +559,16 @@ document.addEventListener(
 
 
 // =========================================
-// MOBILE TOUCH / POINTER CONTROL
-// =========================================
-
-document.addEventListener(
-    "pointerup",
-    function() {
-
-        // Safety stop
-        // Touch/pointer release ke baad robot stop.
-        sendCarCommand("S");
-
-    }
-);
-
-
-// =========================================
 // PAGE LOAD
 // =========================================
 
 window.addEventListener(
     "load",
-    function() {
+    function () {
 
         console.log(
-            "JARVIS P.WEB loaded."
+            "JARVIS P.WEB ONLINE"
         );
-
 
         sendEvent(
             "PWEB_OPENED"
