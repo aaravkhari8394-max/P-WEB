@@ -1,462 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>JARVIS P.WEB</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS P.WEB</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- BACKGROUND -->
-    <div class="background-grid"></div>
-    <div class="scan-line"></div>
+<div class="background-grid"></div>
+<div class="scan-line"></div>
 
-    <!-- HEADER -->
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-orb"></div>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-orb"></div>
+    <div>
+      <div class="brand-title">JARVIS</div>
+      <div class="brand-subtitle">P.WEB</div>
+    </div>
+  </div>
 
-            <div>
-                <div class="brand-title">JARVIS</div>
-                <div class="brand-subtitle">P.WEB</div>
-            </div>
+  <div class="system-status">
+    <span class="status-dot"></span>
+    SYSTEM READY
+  </div>
+</header>
+
+
+<!-- MODE SCREEN -->
+
+<main id="modeScreen" class="screen active">
+
+  <section class="hero">
+    <div class="hero-badge">JARVIS UNIVERSAL ROBOT CONTROL</div>
+
+    <h1>
+      SELECT <span>CONTROL MODE</span>
+    </h1>
+
+    <p>
+      Connect your compatible robot and select the capabilities
+      you want to use.
+    </p>
+  </section>
+
+
+  <section class="mode-grid">
+
+    <button class="mode-card" onclick="selectMode('CAR')">
+      <div class="mode-number">01</div>
+      <div class="mode-icon">🚗</div>
+      <h2>CAR CONTROL</h2>
+      <p>Control your robot using touch or keyboard.</p>
+      <span class="mode-arrow">→</span>
+    </button>
+
+    <button class="mode-card" onclick="selectMode('CAMERA')">
+      <div class="mode-number">02</div>
+      <div class="mode-icon">🚗📷</div>
+      <h2>CAR CONTROL / CAMERA</h2>
+      <p>Drive while viewing the robot camera.</p>
+      <span class="mode-arrow">→</span>
+    </button>
+
+    <button class="mode-card" onclick="selectMode('MIC')">
+      <div class="mode-number">03</div>
+      <div class="mode-icon">🚗📷🎤</div>
+      <h2>CAR / CAMERA / MIC</h2>
+      <p>Add camera and microphone capabilities.</p>
+      <span class="mode-arrow">→</span>
+    </button>
+
+    <button class="mode-card" onclick="selectMode('SENSOR')">
+      <div class="mode-number">04</div>
+      <div class="mode-icon">🚗📷🎤📡</div>
+      <h2>FULL ROBOT SYSTEM</h2>
+      <p>Car, camera, pan/tilt, microphone and sensors.</p>
+      <span class="mode-arrow">→</span>
+    </button>
+
+  </section>
+
+
+  <section class="universal-info">
+    <div class="info-icon">◉</div>
+
+    <div>
+      <h3>UNIVERSAL ROBOT CONTROLLER</h3>
+      <p>
+        JARVIS P.WEB is designed for compatible robots.
+        Each user connects their own robot.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- CONTROL SCREEN -->
+
+<main id="controlScreen" class="screen">
+
+  <section class="control-header">
+
+    <button class="back-button" onclick="goBack()">
+      ← BACK
+    </button>
+
+    <div>
+      <div class="control-label">SELECTED MODE</div>
+      <h1 id="selectedModeTitle">CAR CONTROL</h1>
+    </div>
+
+    <div class="connection-pill">
+      <span class="status-dot"></span>
+      <span id="headerStatus">WAITING</span>
+    </div>
+
+  </section>
+
+
+  <!-- ROBOT CONNECTION -->
+
+  <section class="connection-panel">
+
+    <div class="panel-title">
+      <span>◉</span>
+      ROBOT CONNECTION
+    </div>
+
+
+    <div class="connection-content">
+
+      <div class="connection-form">
+
+        <label for="robotAddress">
+          ROBOT ADDRESS
+        </label>
+
+        <select id="robotAddress">
+          <option value="http://192.168.4.1">
+            192.168.4.1 — ESP AP
+          </option>
+
+          <option value="http://192.168.4.2">
+            192.168.4.2
+          </option>
+
+          <option value="http://192.168.4.3">
+            192.168.4.3
+          </option>
+
+          <option value="http://192.168.4.10">
+            192.168.4.10
+          </option>
+
+          <option value="http://192.168.4.20">
+            192.168.4.20
+          </option>
+
+          <option value="http://192.168.1.1">
+            192.168.1.1
+          </option>
+
+          <option value="http://192.168.1.100">
+            192.168.1.100
+          </option>
+
+          <option value="http://192.168.1.101">
+            192.168.1.101
+          </option>
+
+          <option value="http://192.168.0.1">
+            192.168.0.1
+          </option>
+
+          <option value="http://192.168.0.100">
+            192.168.0.100
+          </option>
+
+          <option value="CUSTOM">
+            CUSTOM ADDRESS
+          </option>
+        </select>
+
+
+        <input
+          id="customRobotAddress"
+          class="custom-address hidden"
+          type="text"
+          placeholder="http://192.168.x.x"
+          autocomplete="off"
+        />
+
+      </div>
+
+
+      <div class="connection-actions">
+
+        <button
+          class="connection-button"
+          onclick="autoScanRobot()">
+          AUTO SCAN
+        </button>
+
+        <button
+          class="connection-button primary-button"
+          onclick="connectRobot()">
+          CONNECT ROBOT
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div id="robotStatus" class="robot-status">
+      WAITING FOR ROBOT
+    </div>
+
+    <div id="scanStatus" class="scan-status"></div>
+
+  </section>
+
+
+  <!-- CAMERA -->
+
+  <section id="cameraPanel" class="feature-panel hidden">
+
+    <div class="panel-title">
+      <span>◉</span>
+      ROBOT CAMERA
+    </div>
+
+
+    <div class="camera-layout">
+
+      <div class="camera-screen">
+
+        <img id="cameraFeed" alt="Robot camera feed">
+
+        <div id="cameraPlaceholder" class="camera-message">
+          CAMERA FEED
+          <br>
+          <span>WAITING FOR ROBOT CAMERA</span>
         </div>
 
-        <div class="system-status">
-            <span class="status-dot"></span>
-            SYSTEM READY
+        <div class="camera-crosshair">+</div>
+
+        <div class="camera-live-badge">
+          <span class="status-dot"></span>
+          <span id="cameraState">STANDBY</span>
         </div>
-    </header>
 
+      </div>
 
-    <!-- ========================= -->
-    <!-- MODE SELECTION SCREEN -->
-    <!-- ========================= -->
 
-    <main id="modeScreen" class="screen active">
+      <!-- PAN TILT -->
 
-        <section class="hero">
+      <div class="pan-tilt-panel">
 
-            <div class="hero-badge">
-                JARVIS ROBOT CONTROL SYSTEM
-            </div>
+        <div class="mini-title">
+          CAMERA PAN / TILT
+        </div>
 
-            <h1>
-                SELECT
-                <span>CONTROL MODE</span>
-            </h1>
 
-            <p>
-                Connect your compatible robot and select the capabilities
-                you want to use.
-            </p>
+        <div class="camera-pad">
 
-        </section>
+          <button class="cam-btn"
+                  data-camera-command="UP">
+            ⬆
+          </button>
 
+          <div></div>
 
-        <section class="mode-grid">
+          <button class="cam-center"
+                  data-camera-command="CENTER">
+            ↺
+          </button>
 
-            <!-- MODE 1 -->
-            <button
-                class="mode-card"
-                onclick="selectMode('CAR')"
-            >
-                <div class="mode-number">01</div>
 
-                <div class="mode-icon">🚗</div>
+          <button class="cam-btn"
+                  data-camera-command="LEFT">
+            ⬅
+          </button>
 
-                <h2>CAR CONTROL</h2>
+          <div></div>
 
-                <p>
-                    Control robot movement using
-                    keyboard or touch controls.
-                </p>
+          <button class="cam-btn"
+                  data-camera-command="RIGHT">
+            ➡
+          </button>
 
-                <span class="mode-arrow">→</span>
-            </button>
 
+          <div></div>
 
-            <!-- MODE 2 -->
-            <button
-                class="mode-card"
-                onclick="selectMode('CAMERA')"
-            >
-                <div class="mode-number">02</div>
+          <button class="cam-btn"
+                  data-camera-command="DOWN">
+            ⬇
+          </button>
 
-                <div class="mode-icon">🚗📷</div>
+          <div></div>
 
-                <h2>CAR CONTROL / CAMERA</h2>
+        </div>
 
-                <p>
-                    Control the robot while viewing
-                    its camera feed.
-                </p>
 
-                <span class="mode-arrow">→</span>
-            </button>
+        <div id="cameraCommandStatus"
+             class="feature-status">
+          CAMERA SERVO STANDBY
+        </div>
 
+      </div>
 
-            <!-- MODE 3 -->
-            <button
-                class="mode-card"
-                onclick="selectMode('MIC')"
-            >
-                <div class="mode-number">03</div>
+    </div>
 
-                <div class="mode-icon">🚗📷🎤</div>
+  </section>
 
-                <h2>CAR CONTROL / CAMERA / MIC</h2>
 
-                <p>
-                    Add robot camera and microphone
-                    capabilities.
-                </p>
+  <!-- CAR CONTROL -->
 
-                <span class="mode-arrow">→</span>
-            </button>
+  <section class="robot-section">
 
+    <div class="section-heading">
+      <span class="section-line"></span>
+      <h2>CAR CONTROL</h2>
+      <span class="section-line"></span>
+    </div>
 
-            <!-- MODE 4 -->
-            <button
-                class="mode-card"
-                onclick="selectMode('SENSOR')"
-            >
-                <div class="mode-number">04</div>
 
-                <div class="mode-icon">🚗📷🎤📡</div>
+    <div class="car-control-area">
 
-                <h2>CAR CONTROL / CAMERA / MIC / SENSOR</h2>
+      <div class="control-pair">
 
-                <p>
-                    Full robot control with camera,
-                    microphone and sensor systems.
-                </p>
+        <button id="btn-F"
+                class="control-button">
+          <span>⬆</span>
+          <small>FORWARD</small>
+        </button>
 
-                <span class="mode-arrow">→</span>
-            </button>
+        <button id="btn-B"
+                class="control-button">
+          <span>⬇</span>
+          <small>BACKWARD</small>
+        </button>
 
-        </section>
+      </div>
 
 
-        <!-- UNIVERSAL ROBOT INFO -->
+      <div class="control-pair">
 
-        <section class="universal-info">
+        <button id="btn-L"
+                class="control-button">
+          <span>⬅</span>
+          <small>LEFT</small>
+        </button>
 
-            <div class="info-icon">◉</div>
+        <button id="btn-R"
+                class="control-button">
+          <span>➡</span>
+          <small>RIGHT</small>
+        </button>
 
-            <div>
-                <h3>UNIVERSAL ROBOT CONTROLLER</h3>
+      </div>
 
-                <p>
-                    JARVIS P.WEB is designed to work with
-                    compatible robot cars. Connect your own
-                    robot to its network and use the same P.WEB.
-                </p>
-            </div>
 
-        </section>
+      <button id="btn-S"
+              class="stop-button">
+        STOP
+      </button>
 
-    </main>
+    </div>
 
+  </section>
 
 
-    <!-- ========================= -->
-    <!-- CONTROL SCREEN -->
-    <!-- ========================= -->
+  <!-- MIC -->
 
-    <main id="controlScreen" class="screen">
+  <section id="micPanel"
+           class="feature-panel hidden">
 
-        <!-- CONTROL HEADER -->
+    <div class="panel-title">
+      <span>◉</span>
+      ROBOT MICROPHONE
+    </div>
 
-        <section class="control-header">
+    <div class="feature-box">
 
-            <button
-                class="back-button"
-                onclick="goBack()"
-            >
-                ← BACK
-            </button>
+      <div class="large-icon">🎤</div>
 
-            <div>
-                <div class="control-label">
-                    SELECTED MODE
-                </div>
+      <h3>MICROPHONE SYSTEM</h3>
 
-                <h1 id="selectedModeTitle">
-                    CAR CONTROL
-                </h1>
-            </div>
+      <p id="micText">
+        Waiting for compatible robot microphone.
+      </p>
 
-            <div class="connection-pill">
-                <span class="status-dot"></span>
-                ROBOT READY
-            </div>
+      <div id="micStatus"
+           class="feature-status">
+        WAITING FOR MICROPHONE
+      </div>
 
-        </section>
+      <button class="connection-button"
+              onclick="testBrowserMicrophone()">
+        TEST DEVICE MIC
+      </button>
 
+    </div>
 
+  </section>
 
-        <!-- ROBOT CONNECTION -->
 
-        <section class="connection-panel">
+  <!-- SENSORS -->
 
-            <div class="panel-title">
-                <span>◉</span>
-                ROBOT CONNECTION
-            </div>
+  <section id="sensorPanel"
+           class="feature-panel hidden">
 
-            <div class="connection-content">
+    <div class="panel-title">
+      <span>◉</span>
+      ROBOT SENSORS
+    </div>
 
-                <div>
-                    <h3>CONNECT YOUR ROBOT</h3>
 
-                    <p id="connectionText">
-                        Connect your phone or laptop to your
-                        robot's Wi-Fi network first.
-                    </p>
-                </div>
+    <div class="sensor-grid">
 
-                <button
-                    class="connection-button"
-                    onclick="testRobotConnection()"
-                >
-                    TEST CONNECTION
-                </button>
+      <div class="sensor-card">
+        <span>◉</span>
+        <strong>ULTRASONIC</strong>
+        <b id="sensor-distance">-- cm</b>
+        <small id="sensor-ultrasonic">WAITING</small>
+      </div>
 
-            </div>
+      <div class="sensor-card">
+        <span>◉</span>
+        <strong>OBSTACLE</strong>
+        <b id="sensor-obstacle">--</b>
+        <small id="sensor-obstacle-state">WAITING</small>
+      </div>
 
-            <div
-                id="robotStatus"
-                class="robot-status"
-            >
-                WAITING FOR ROBOT
-            </div>
+      <div class="sensor-card">
+        <span>◉</span>
+        <strong>BATTERY</strong>
+        <b id="sensor-battery">-- V</b>
+        <small id="sensor-battery-state">WAITING</small>
+      </div>
 
-        </section>
+      <div class="sensor-card">
+        <span>◉</span>
+        <strong>SYSTEM</strong>
+        <b id="sensor-system">--</b>
+        <small id="sensor-system-state">WAITING</small>
+      </div>
 
+    </div>
 
+  </section>
 
-        <!-- ========================= -->
-        <!-- CAR CONTROL -->
-        <!-- ========================= -->
+</main>
 
-        <section class="robot-section">
 
-            <div class="section-heading">
-                <span class="section-line"></span>
+<footer>
+  <span>JARVIS P.WEB</span>
+  <span>SMARTER • FASTER • TOGETHER</span>
+  <span>v0.5</span>
+  <span>MADE BY AARAV KHARI</span>
+</footer>
 
-                <h2>CAR CONTROL</h2>
 
-                <span class="section-line"></span>
-            </div>
-
-
-            <div class="car-control-area">
-
-                <!-- UP / DOWN -->
-
-                <div class="control-pair vertical-pair">
-
-                    <button
-                        id="btn-F"
-                        class="control-button"
-                        onclick="sendCarCommand('F')"
-                    >
-                        <span>⬆</span>
-                        <small>FORWARD</small>
-                    </button>
-
-                    <button
-                        id="btn-B"
-                        class="control-button"
-                        onclick="sendCarCommand('B')"
-                    >
-                        <span>⬇</span>
-                        <small>BACKWARD</small>
-                    </button>
-
-                </div>
-
-
-                <!-- LEFT / RIGHT -->
-
-                <div class="control-pair horizontal-pair">
-
-                    <button
-                        id="btn-L"
-                        class="control-button"
-                        onclick="sendCarCommand('L')"
-                    >
-                        <span>⬅</span>
-                        <small>LEFT</small>
-                    </button>
-
-                    <button
-                        id="btn-R"
-                        class="control-button"
-                        onclick="sendCarCommand('R')"
-                    >
-                        <span>➡</span>
-                        <small>RIGHT</small>
-                    </button>
-
-                </div>
-
-
-                <!-- STOP -->
-
-                <button
-                    id="btn-S"
-                    class="stop-button"
-                    onclick="sendCarCommand('S')"
-                >
-                    STOP
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ========================= -->
-        <!-- CAMERA -->
-        <!-- ========================= -->
-
-        <section
-            id="cameraPanel"
-            class="feature-panel hidden"
-        >
-
-            <div class="panel-title">
-                <span>◉</span>
-                ROBOT CAMERA
-            </div>
-
-            <div class="camera-screen">
-
-                <div class="camera-crosshair">
-                    +
-                </div>
-
-                <div class="camera-message">
-                    CAMERA FEED<br>
-                    <span>WAITING FOR ROBOT CAMERA</span>
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ========================= -->
-        <!-- MICROPHONE -->
-        <!-- ========================= -->
-
-        <section
-            id="micPanel"
-            class="feature-panel hidden"
-        >
-
-            <div class="panel-title">
-                <span>◉</span>
-                ROBOT MICROPHONE
-            </div>
-
-            <div class="feature-box">
-
-                <div class="large-icon">
-                    🎤
-                </div>
-
-                <h3>MICROPHONE SYSTEM</h3>
-
-                <p>
-                    Robot microphone interface will appear
-                    when a compatible microphone is connected.
-                </p>
-
-                <div class="feature-status">
-                    WAITING FOR MICROPHONE
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ========================= -->
-        <!-- SENSOR -->
-        <!-- ========================= -->
-
-        <section
-            id="sensorPanel"
-            class="feature-panel hidden"
-        >
-
-            <div class="panel-title">
-                <span>◉</span>
-                ROBOT SENSORS
-            </div>
-
-            <div class="sensor-grid">
-
-                <div class="sensor-card">
-                    <span>◉</span>
-                    <strong>ULTRASONIC</strong>
-                    <small>WAITING</small>
-                </div>
-
-                <div class="sensor-card">
-                    <span>◉</span>
-                    <strong>OBSTACLE</strong>
-                    <small>WAITING</small>
-                </div>
-
-                <div class="sensor-card">
-                    <span>◉</span>
-                    <strong>DISTANCE</strong>
-                    <small>WAITING</small>
-                </div>
-
-                <div class="sensor-card">
-                    <span>◉</span>
-                    <strong>STATUS</strong>
-                    <small>WAITING</small>
-                </div>
-
-            </div>
-
-        </section>
-
-
-    </main>
-
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <span>JARVIS P.WEB</span>
-
-        <span>SMARTER • FASTER • TOGETHER</span>
-
-        <span>v0.3</span>
-
-        <span>MADE BY AARAV KHARI</span>
-
-    </footer>
-
-
-
-    <script src="app.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
