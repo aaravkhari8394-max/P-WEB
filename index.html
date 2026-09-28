@@ -2,471 +2,1809 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JARVIS P.WEB</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#01050b;
+  color:#e8fcff;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+/* ================= BACKGROUND ================= */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-10;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(0,220,255,.18),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(30,80,255,.15),
+      transparent 25%
+    ),
+    linear-gradient(
+      180deg,
+      #020914 0%,
+      #031525 45%,
+      #01050a 100%
+    );
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-9;
+
+  background:
+    linear-gradient(
+      rgba(0,234,255,.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0,234,255,.035) 1px,
+      transparent 1px
+    );
+
+  background-size:42px 42px;
+  animation:gridMove 14s linear infinite;
+}
+
+@keyframes gridMove{
+  to{
+    background-position:42px 42px;
+  }
+}
+
+/* ================= UFO ================= */
+
+.ufo{
+  position:fixed;
+  z-index:-5;
+  width:420px;
+  height:110px;
+  left:50%;
+  top:115px;
+  transform:translateX(-50%);
+  animation:ufoFloat 5s ease-in-out infinite;
+}
+
+.ufo-top{
+  position:absolute;
+  width:260px;
+  height:70px;
+  left:80px;
+  top:0;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      ellipse,
+      #8ff8ff 0%,
+      #00bde8 18%,
+      #073f75 45%,
+      #010b18 75%
+    );
+  box-shadow:
+    0 0 25px #00eaff,
+    0 0 70px rgba(0,234,255,.5);
+}
+
+.ufo-bottom{
+  position:absolute;
+  width:390px;
+  height:75px;
+  left:15px;
+  top:35px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      ellipse,
+      #062d50 0%,
+      #020b15 55%,
+      #000 100%
+    );
+  border:2px solid #00bde8;
+  box-shadow:
+    0 0 30px rgba(0,234,255,.5);
+}
+
+.ufo-light{
+  position:absolute;
+  width:140px;
+  height:70px;
+  left:140px;
+  top:70px;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,234,255,.7),
+    rgba(0,234,255,0)
+  );
+  clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);
+  filter:blur(5px);
+}
+
+@keyframes ufoFloat{
+  0%,100%{
+    transform:translate(-50%,0);
+  }
+  50%{
+    transform:translate(-50%,18px);
+  }
+}
+
+/* ================= CAR ================= */
+
+.car-art{
+  position:fixed;
+  z-index:-4;
+  left:50%;
+  bottom:245px;
+  transform:translateX(-50%);
+  width:650px;
+  height:190px;
+  animation:carGlow 3s ease-in-out infinite alternate;
+}
+
+.car-body{
+  position:absolute;
+  left:70px;
+  bottom:35px;
+  width:510px;
+  height:100px;
+  border-radius:45% 48% 18% 18%;
+  background:
+    linear-gradient(
+      145deg,
+      #071d31,
+      #02070c 55%,
+      #061b2c
+    );
+  border:2px solid #087da8;
+  box-shadow:
+    0 0 25px rgba(0,200,255,.35),
+    inset 0 0 35px rgba(0,160,255,.18);
+}
+
+.car-roof{
+  position:absolute;
+  left:190px;
+  top:5px;
+  width:270px;
+  height:80px;
+  border-radius:80% 80% 10% 10%;
+  background:
+    linear-gradient(
+      135deg,
+      #082b43,
+      #01060b
+    );
+  border:2px solid #087da8;
+}
+
+.car-window{
+  position:absolute;
+  left:220px;
+  top:18px;
+  width:100px;
+  height:48px;
+  background:#031c31;
+  border:1px solid #00bde8;
+  transform:skew(-18deg);
+}
+
+.car-window2{
+  position:absolute;
+  left:330px;
+  top:18px;
+  width:105px;
+  height:48px;
+  background:#031c31;
+  border:1px solid #00bde8;
+  transform:skew(18deg);
+}
+
+.wheel{
+  position:absolute;
+  width:75px;
+  height:75px;
+  bottom:5px;
+  border-radius:50%;
+  background:#020306;
+  border:5px solid #071c29;
+  box-shadow:0 0 0 2px #008db5;
+}
+
+.wheel.left{
+  left:115px;
+}
+
+.wheel.right{
+  right:115px;
+}
+
+.headlight{
+  position:absolute;
+  width:75px;
+  height:13px;
+  background:#00eaff;
+  box-shadow:0 0 20px #00eaff;
+  border-radius:50%;
+  top:52px;
+}
+
+.headlight.left{
+  left:82px;
+}
+
+.headlight.right{
+  right:82px;
+}
+
+@keyframes carGlow{
+  from{
+    filter:brightness(.8);
+  }
+  to{
+    filter:brightness(1.15);
+  }
+}
+
+/* ================= APP ================= */
+
+.app{
+  max-width:1450px;
+  margin:auto;
+  padding:16px;
+}
+
+/* HEADER */
+
+.header{
+  min-height:76px;
+
+  border:1px solid #079fc0;
+  border-radius:18px;
+
+  background:rgba(1,12,21,.75);
+
+  backdrop-filter:blur(12px);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:15px 24px;
+
+  box-shadow:
+    0 0 30px rgba(0,220,255,.12);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.brand-mark{
+  width:46px;
+  height:46px;
+
+  border:2px solid #00eaff;
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  font-size:23px;
+
+  box-shadow:
+    0 0 20px rgba(0,234,255,.6);
+}
+
+.logo{
+  font-size:30px;
+  font-weight:bold;
+  letter-spacing:8px;
+}
+
+.logo span{
+  color:#00eaff;
+}
+
+.tag{
+  margin-top:4px;
+  font-size:10px;
+  letter-spacing:4px;
+  color:#70cbd7;
+}
+
+.ready{
+  color:#00eaff;
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+.dot{
+  display:inline-block;
+  width:9px;
+  height:9px;
+  margin-left:7px;
+  border-radius:50%;
+  background:#00ff9d;
+  box-shadow:0 0 14px #00ff9d;
+}
+
+/* HERO */
+
+.hero{
+  margin:18px 0;
+
+  min-height:250px;
+
+  border:1px solid #078ba9;
+  border-radius:20px;
+
+  padding:38px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,5,12,.88),
+      rgba(0,8,15,.35)
+    );
+
+  backdrop-filter:blur(5px);
+
+  position:relative;
+  overflow:hidden;
+}
+
+.hero small{
+  color:#00eaff;
+  letter-spacing:5px;
+}
+
+.hero h1{
+  font-size:clamp(42px,6vw,75px);
+  margin:10px 0;
+  letter-spacing:2px;
+  text-shadow:0 0 30px rgba(0,234,255,.5);
+}
+
+.hero h1 span{
+  color:#00eaff;
+}
+
+.hero p{
+  color:#82c9d2;
+  letter-spacing:5px;
+}
+
+.scan{
+  position:absolute;
+  width:300px;
+  height:2px;
+  right:20%;
+  bottom:35px;
+  background:#00eaff;
+  box-shadow:0 0 20px #00eaff;
+  animation:scan 3s infinite;
+}
+
+@keyframes scan{
+  0%,100%{
+    transform:translateY(-50px);
+    opacity:.1;
+  }
+
+  50%{
+    transform:translateY(50px);
+    opacity:1;
+  }
+}
+
+/* MAIN */
+
+.layout{
+  display:grid;
+  grid-template-columns:1fr 300px;
+  gap:18px;
+}
+
+.options{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+/* OPTIONS */
+
+.option{
+  min-height:240px;
+
+  text-align:left;
+
+  padding:26px;
+
+  border-radius:18px;
+
+  border:1px solid #078ba9;
+
+  color:#dffcff;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(2,20,31,.9),
+      rgba(1,8,14,.82)
+    );
+
+  backdrop-filter:blur(10px);
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  box-shadow:
+    0 0 20px rgba(0,190,255,.08);
+}
+
+.option:hover{
+  transform:translateY(-5px);
+
+  border-color:#00eaff;
+
+  box-shadow:
+    0 0 35px rgba(0,234,255,.25);
+}
+
+.icon{
+  width:75px;
+  height:75px;
+
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  font-size:35px;
+
+  border:2px solid #00eaff;
+
+  color:#00eaff;
+
+  box-shadow:
+    0 0 25px rgba(0,234,255,.3);
+
+  margin-bottom:20px;
+}
+
+.option:nth-child(2) .icon{
+  color:#8d70ff;
+  border-color:#8d70ff;
+}
+
+.option:nth-child(3) .icon{
+  color:#ff55d6;
+  border-color:#ff55d6;
+}
+
+.option:nth-child(4) .icon{
+  color:#00ffc8;
+  border-color:#00ffc8;
+}
+
+.option h2{
+  font-size:19px;
+  letter-spacing:2px;
+}
+
+.option p{
+  margin-top:10px;
+  color:#78aeb8;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.select{
+  display:inline-block;
+  margin-top:17px;
+
+  border:1px solid #00bcd4;
+  border-radius:8px;
+
+  padding:9px 17px;
+
+  color:#00eaff;
+
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+/* LOG */
+
+.sidebar{
+  border:1px solid #078ba9;
+  border-radius:18px;
+
+  background:rgba(1,11,19,.82);
+
+  backdrop-filter:blur(12px);
+
+  padding:18px;
+
+  min-height:500px;
+}
+
+.side-title{
+  padding-bottom:14px;
+  border-bottom:1px solid #164553;
+
+  display:flex;
+  justify-content:space-between;
+}
+
+.side-title h3{
+  color:#7eeeff;
+  letter-spacing:2px;
+  font-size:15px;
+}
+
+.log{
+  height:410px;
+  overflow:auto;
+
+  margin-top:12px;
+
+  color:#8dd9e5;
+
+  font:12px/2 monospace;
+}
+
+/* FOOTER */
+
+.footer{
+  margin-top:18px;
+
+  border:1px solid #078ba9;
+  border-radius:16px;
+
+  padding:14px;
+
+  display:flex;
+  justify-content:space-around;
+  flex-wrap:wrap;
+
+  background:rgba(1,11,19,.75);
+
+  color:#6da6af;
+
+  font-size:11px;
+}
+
+.footer span{
+  color:#00eaff;
+}
+
+/* PANELS */
+
+.panel{
+  display:none;
+  margin-top:18px;
+}
+
+.panel.active{
+  display:block;
+}
+
+.panel-head{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.back,
+.btn{
+  border:1px solid #078ba9;
+
+  background:#03131d;
+
+  color:#00eaff;
+
+  border-radius:8px;
+
+  padding:11px 18px;
+
+  cursor:pointer;
+}
+
+.back:hover,
+.btn:hover{
+  border-color:#00eaff;
+
+  box-shadow:
+    0 0 15px rgba(0,234,255,.3);
+}
+
+.panel-title{
+  letter-spacing:3px;
+}
+
+.card{
+  border:1px solid #078ba9;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  background:rgba(1,12,20,.86);
+
+  margin-bottom:16px;
+}
+
+.card h3{
+  color:#7eeeff;
+
+  letter-spacing:2px;
+
+  font-size:13px;
+
+  margin-bottom:14px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+}
+
+.input{
+  flex:1;
+
+  padding:12px;
+
+  border:1px solid #176477;
+
+  border-radius:8px;
+
+  background:#020a10;
+
+  color:white;
+}
+
+/* CAR CONTROLS */
+
+.car{
+  width:320px;
+  max-width:100%;
+
+  margin:auto;
+
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:9px;
+}
+
+.car button,
+.servo button{
+  height:64px;
+  font-size:24px;
+}
+
+/* CAMERA */
+
+.camera{
+  height:400px;
+
+  border:1px solid #145b6d;
+
+  border-radius:12px;
+
+  background:#000;
+
+  display:grid;
+
+  place-items:center;
+
+  overflow:hidden;
+}
+
+.camera img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.camtext{
+  color:#356c77;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    min-height:220px;
+  }
+
+  .log{
+    height:150px;
+  }
+
+  .car-art{
+    transform:translateX(-50%) scale(.65);
+    bottom:230px;
+  }
+
+  .ufo{
+    transform:translateX(-50%) scale(.65);
+  }
+}
+
+@media(max-width:650px){
+
+  .options{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    padding:28px 22px;
+  }
+
+  .logo{
+    font-size:22px;
+    letter-spacing:5px;
+  }
+
+  .ready{
+    display:none;
+  }
+
+  .car-art{
+    display:none;
+  }
+
+  .ufo{
+    top:130px;
+    transform:translateX(-50%) scale(.45);
+  }
+
+  .row{
+    flex-direction:column;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div class="background-grid"></div>
-<div class="scan-line"></div>
+<!-- UFO -->
+<div class="ufo">
+  <div class="ufo-top"></div>
+  <div class="ufo-bottom"></div>
+  <div class="ufo-light"></div>
+</div>
 
-<header class="topbar">
+<!-- BUGATTI STYLE CAR -->
+<div class="car-art">
+
+  <div class="car-body">
+
+    <div class="headlight left"></div>
+    <div class="headlight right"></div>
+
+  </div>
+
+  <div class="car-roof"></div>
+
+  <div class="car-window"></div>
+  <div class="car-window2"></div>
+
+  <div class="wheel left"></div>
+  <div class="wheel right"></div>
+
+</div>
+
+
+<div class="app">
+
+<header class="header">
+
   <div class="brand">
-    <div class="brand-orb"></div>
-    <div>
-      <div class="brand-title">JARVIS</div>
-      <div class="brand-subtitle">P.WEB</div>
+
+    <div class="brand-mark">
+      A
     </div>
+
+    <div>
+
+      <div class="logo">
+        JARVIS <span>P.WEB</span>
+      </div>
+
+      <div class="tag">
+        SMART CONTROL • SMARTER TOMORROW
+      </div>
+
+    </div>
+
   </div>
 
-  <div class="system-status">
-    <span class="status-dot"></span>
-    SYSTEM READY
+  <div class="ready">
+    ◉ SYSTEM READY
+    <i class="dot"></i>
   </div>
+
 </header>
 
 
-<!-- MODE SCREEN -->
+<!-- HOME -->
 
-<main id="modeScreen" class="screen active">
+<section id="home">
 
-  <section class="hero">
-    <div class="hero-badge">JARVIS UNIVERSAL ROBOT CONTROL</div>
+  <div class="hero">
+
+    <small>
+      WELCOME TO
+    </small>
 
     <h1>
-      SELECT <span>CONTROL MODE</span>
+      JARVIS <span>P.WEB</span>
     </h1>
 
     <p>
-      Connect your compatible robot and select the capabilities
-      you want to use.
+      CONTROL • MONITOR • EXPLORE
     </p>
-  </section>
+
+    <div class="scan"></div>
+
+  </div>
 
 
-  <section class="mode-grid">
+  <div class="layout">
 
-    <button class="mode-card" onclick="selectMode('CAR')">
-      <div class="mode-number">01</div>
-      <div class="mode-icon">🚗</div>
-      <h2>CAR CONTROL</h2>
-      <p>Control your robot using touch or keyboard.</p>
-      <span class="mode-arrow">→</span>
-    </button>
+    <div class="options">
 
-    <button class="mode-card" onclick="selectMode('CAMERA')">
-      <div class="mode-number">02</div>
-      <div class="mode-icon">🚗📷</div>
-      <h2>CAR CONTROL / CAMERA</h2>
-      <p>Drive while viewing the robot camera.</p>
-      <span class="mode-arrow">→</span>
-    </button>
+      <button
+        class="option"
+        onclick="openPanel('carPanel')">
 
-    <button class="mode-card" onclick="selectMode('MIC')">
-      <div class="mode-number">03</div>
-      <div class="mode-icon">🚗📷🎤</div>
-      <h2>CAR / CAMERA / MIC</h2>
-      <p>Add camera and microphone capabilities.</p>
-      <span class="mode-arrow">→</span>
-    </button>
+        <div class="icon">
+          🚗
+        </div>
 
-    <button class="mode-card" onclick="selectMode('SENSOR')">
-      <div class="mode-number">04</div>
-      <div class="mode-icon">🚗📷🎤📡</div>
-      <h2>FULL ROBOT SYSTEM</h2>
-      <p>Car, camera, pan/tilt, microphone and sensors.</p>
-      <span class="mode-arrow">→</span>
-    </button>
+        <h2>
+          CAR CONTROL
+        </h2>
 
-  </section>
+        <p>
+          Control JARVIS car movement
+          using ESP8266.
+        </p>
+
+        <span class="select">
+          SELECT ›
+        </span>
+
+      </button>
 
 
-  <section class="universal-info">
-    <div class="info-icon">◉</div>
+      <button
+        class="option"
+        onclick="openPanel('cameraPanel')">
 
-    <div>
-      <h3>UNIVERSAL ROBOT CONTROLLER</h3>
-      <p>
-        JARVIS P.WEB is designed for compatible robots.
-        Each user connects their own robot.
-      </p>
+        <div class="icon">
+          📷
+        </div>
+
+        <h2>
+          CAR + CAMERA CONTROL
+        </h2>
+
+        <p>
+          Car movement plus A9 camera
+          and camera control.
+        </p>
+
+        <span class="select">
+          SELECT ›
+        </span>
+
+      </button>
+
+
+      <button
+        class="option"
+        onclick="openPanel('micPanel')">
+
+        <div class="icon">
+          🎤
+        </div>
+
+        <h2>
+          CAR + CAMERA + MIC CONTROL
+        </h2>
+
+        <p>
+          Car, camera and microphone
+          control in one panel.
+        </p>
+
+        <span class="select">
+          SELECT ›
+        </span>
+
+      </button>
+
+
+      <button
+        class="option"
+        onclick="openPanel('systemPanel')">
+
+        <div class="icon">
+          ⚙
+        </div>
+
+        <h2>
+          WHOLE SYSTEM CONTROL
+        </h2>
+
+        <p>
+          Full JARVIS control,
+          connection, car, servo,
+          camera and microphone.
+        </p>
+
+        <span class="select">
+          SELECT ›
+        </span>
+
+      </button>
+
     </div>
-  </section>
-
-</main>
 
 
-<!-- CONTROL SCREEN -->
+    <!-- SYSTEM LOG -->
 
-<main id="controlScreen" class="screen">
+    <aside class="sidebar">
 
-  <section class="control-header">
+      <div class="side-title">
 
-    <button class="back-button" onclick="goBack()">
+        <h3>
+          ◈ SYSTEM LOG
+        </h3>
+
+        <span>
+          ⌃
+        </span>
+
+      </div>
+
+      <div
+        id="log"
+        class="log">
+      </div>
+
+    </aside>
+
+  </div>
+
+</section>
+
+
+<!-- CAR PANEL -->
+
+<section
+  id="carPanel"
+  class="panel">
+
+  <div class="panel-head">
+
+    <button
+      class="back"
+      onclick="goHome()">
       ← BACK
     </button>
 
-    <div>
-      <div class="control-label">SELECTED MODE</div>
-      <h1 id="selectedModeTitle">CAR CONTROL</h1>
-    </div>
+    <h2 class="panel-title">
+      CAR CONTROL
+    </h2>
 
-    <div class="connection-pill">
-      <span class="status-dot"></span>
-      <span id="headerStatus">WAITING</span>
-    </div>
+  </div>
 
-  </section>
 
+  <div class="card">
 
-  <!-- ROBOT CONNECTION -->
+    <h3>
+      ESP8266 CONNECTION
+    </h3>
 
-  <section class="connection-panel">
+    <div class="row">
 
-    <div class="panel-title">
-      <span>◉</span>
-      ROBOT CONNECTION
-    </div>
+      <input
+        class="input"
+        id="robot1"
+        value="http://192.168.4.1">
 
-
-    <div class="connection-content">
-
-      <div class="connection-form">
-
-        <label for="robotAddress">
-          ROBOT ADDRESS
-        </label>
-
-        <select id="robotAddress">
-          <option value="http://192.168.4.1">
-            192.168.4.1 — ESP AP
-          </option>
-
-          <option value="http://192.168.4.2">
-            192.168.4.2
-          </option>
-
-          <option value="http://192.168.4.3">
-            192.168.4.3
-          </option>
-
-          <option value="http://192.168.4.10">
-            192.168.4.10
-          </option>
-
-          <option value="http://192.168.4.20">
-            192.168.4.20
-          </option>
-
-          <option value="http://192.168.1.1">
-            192.168.1.1
-          </option>
-
-          <option value="http://192.168.1.100">
-            192.168.1.100
-          </option>
-
-          <option value="http://192.168.1.101">
-            192.168.1.101
-          </option>
-
-          <option value="http://192.168.0.1">
-            192.168.0.1
-          </option>
-
-          <option value="http://192.168.0.100">
-            192.168.0.100
-          </option>
-
-          <option value="CUSTOM">
-            CUSTOM ADDRESS
-          </option>
-        </select>
-
-
-        <input
-          id="customRobotAddress"
-          class="custom-address hidden"
-          type="text"
-          placeholder="http://192.168.x.x"
-          autocomplete="off"
-        />
-
-      </div>
-
-
-      <div class="connection-actions">
-
-        <button
-          class="connection-button"
-          onclick="autoScanRobot()">
-          AUTO SCAN
-        </button>
-
-        <button
-          class="connection-button primary-button"
-          onclick="connectRobot()">
-          CONNECT ROBOT
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div id="robotStatus" class="robot-status">
-      WAITING FOR ROBOT
-    </div>
-
-    <div id="scanStatus" class="scan-status"></div>
-
-  </section>
-
-
-  <!-- CAMERA -->
-
-  <section id="cameraPanel" class="feature-panel hidden">
-
-    <div class="panel-title">
-      <span>◉</span>
-      ROBOT CAMERA
-    </div>
-
-
-    <div class="camera-layout">
-
-      <div class="camera-screen">
-
-        <img id="cameraFeed" alt="Robot camera feed">
-
-        <div id="cameraPlaceholder" class="camera-message">
-          CAMERA FEED
-          <br>
-          <span>WAITING FOR ROBOT CAMERA</span>
-        </div>
-
-        <div class="camera-crosshair">+</div>
-
-        <div class="camera-live-badge">
-          <span class="status-dot"></span>
-          <span id="cameraState">STANDBY</span>
-        </div>
-
-      </div>
-
-
-      <!-- PAN TILT -->
-
-      <div class="pan-tilt-panel">
-
-        <div class="mini-title">
-          CAMERA PAN / TILT
-        </div>
-
-
-        <div class="camera-pad">
-
-          <button class="cam-btn"
-                  data-camera-command="UP">
-            ⬆
-          </button>
-
-          <div></div>
-
-          <button class="cam-center"
-                  data-camera-command="CENTER">
-            ↺
-          </button>
-
-
-          <button class="cam-btn"
-                  data-camera-command="LEFT">
-            ⬅
-          </button>
-
-          <div></div>
-
-          <button class="cam-btn"
-                  data-camera-command="RIGHT">
-            ➡
-          </button>
-
-
-          <div></div>
-
-          <button class="cam-btn"
-                  data-camera-command="DOWN">
-            ⬇
-          </button>
-
-          <div></div>
-
-        </div>
-
-
-        <div id="cameraCommandStatus"
-             class="feature-status">
-          CAMERA SERVO STANDBY
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- CAR CONTROL -->
-
-  <section class="robot-section">
-
-    <div class="section-heading">
-      <span class="section-line"></span>
-      <h2>CAR CONTROL</h2>
-      <span class="section-line"></span>
-    </div>
-
-
-    <div class="car-control-area">
-
-      <div class="control-pair">
-
-        <button id="btn-F"
-                class="control-button">
-          <span>⬆</span>
-          <small>FORWARD</small>
-        </button>
-
-        <button id="btn-B"
-                class="control-button">
-          <span>⬇</span>
-          <small>BACKWARD</small>
-        </button>
-
-      </div>
-
-
-      <div class="control-pair">
-
-        <button id="btn-L"
-                class="control-button">
-          <span>⬅</span>
-          <small>LEFT</small>
-        </button>
-
-        <button id="btn-R"
-                class="control-button">
-          <span>➡</span>
-          <small>RIGHT</small>
-        </button>
-
-      </div>
-
-
-      <button id="btn-S"
-              class="stop-button">
-        STOP
+      <button
+        class="btn"
+        onclick="connect('robot1')">
+        CONNECT
       </button>
 
     </div>
 
-  </section>
+  </div>
 
 
-  <!-- MIC -->
+  <div class="card">
 
-  <section id="micPanel"
-           class="feature-panel hidden">
+    <h3>
+      MOVEMENT
+    </h3>
 
-    <div class="panel-title">
-      <span>◉</span>
-      ROBOT MICROPHONE
+    <div class="car">
+
+      <span></span>
+
+      <button
+        onpointerdown="car('F')"
+        onpointerup="car('S')">
+        ▲
+      </button>
+
+      <span></span>
+
+
+      <button
+        onpointerdown="car('L')"
+        onpointerup="car('S')">
+        ◀
+      </button>
+
+      <button
+        onclick="car('S')">
+        ■
+      </button>
+
+      <button
+        onpointerdown="car('R')"
+        onpointerup="car('S')">
+        ▶
+      </button>
+
+
+      <span></span>
+
+      <button
+        onpointerdown="car('B')"
+        onpointerup="car('S')">
+        ▼
+      </button>
+
+      <span></span>
+
     </div>
 
-    <div class="feature-box">
+  </div>
 
-      <div class="large-icon">🎤</div>
+</section>
 
-      <h3>MICROPHONE SYSTEM</h3>
 
-      <p id="micText">
-        Waiting for compatible robot microphone.
-      </p>
+<!-- CAMERA PANEL -->
 
-      <div id="micStatus"
-           class="feature-status">
-        WAITING FOR MICROPHONE
-      </div>
+<section
+  id="cameraPanel"
+  class="panel">
 
-      <button class="connection-button"
-              onclick="testBrowserMicrophone()">
-        TEST DEVICE MIC
+  <div class="panel-head">
+
+    <button
+      class="back"
+      onclick="goHome()">
+      ← BACK
+    </button>
+
+    <h2 class="panel-title">
+      CAR + CAMERA CONTROL
+    </h2>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      CAMERA
+    </h3>
+
+    <div class="row">
+
+      <input
+        class="input"
+        id="cam1"
+        placeholder="A9 camera stream URL">
+
+      <button
+        class="btn"
+        onclick="loadCamera('cam1','view1')">
+        OPEN
       </button>
 
     </div>
 
-  </section>
+
+    <br>
 
 
-  <!-- SENSORS -->
+    <div class="camera">
 
-  <section id="sensorPanel"
-           class="feature-panel hidden">
+      <img id="view1">
 
-    <div class="panel-title">
-      <span>◉</span>
-      ROBOT SENSORS
-    </div>
-
-
-    <div class="sensor-grid">
-
-      <div class="sensor-card">
-        <span>◉</span>
-        <strong>ULTRASONIC</strong>
-        <b id="sensor-distance">-- cm</b>
-        <small id="sensor-ultrasonic">WAITING</small>
-      </div>
-
-      <div class="sensor-card">
-        <span>◉</span>
-        <strong>OBSTACLE</strong>
-        <b id="sensor-obstacle">--</b>
-        <small id="sensor-obstacle-state">WAITING</small>
-      </div>
-
-      <div class="sensor-card">
-        <span>◉</span>
-        <strong>BATTERY</strong>
-        <b id="sensor-battery">-- V</b>
-        <small id="sensor-battery-state">WAITING</small>
-      </div>
-
-      <div class="sensor-card">
-        <span>◉</span>
-        <strong>SYSTEM</strong>
-        <b id="sensor-system">--</b>
-        <small id="sensor-system-state">WAITING</small>
-      </div>
+      <span
+        id="ct1"
+        class="camtext">
+        CAMERA STANDBY
+      </span>
 
     </div>
 
-  </section>
-
-</main>
+  </div>
 
 
-<footer>
-  <span>JARVIS P.WEB</span>
-  <span>SMARTER • FASTER • TOGETHER</span>
-  <span>v0.5</span>
-  <span>MADE BY AARAV KHARI</span>
+  <div class="card">
+
+    <h3>
+      CAR
+    </h3>
+
+    <div class="car">
+
+      <span></span>
+
+      <button
+        onpointerdown="car('F')"
+        onpointerup="car('S')">
+        ▲
+      </button>
+
+      <span></span>
+
+      <button
+        onpointerdown="car('L')"
+        onpointerup="car('S')">
+        ◀
+      </button>
+
+      <button onclick="car('S')">
+        ■
+      </button>
+
+      <button
+        onpointerdown="car('R')"
+        onpointerup="car('S')">
+        ▶
+      </button>
+
+      <span></span>
+
+      <button
+        onpointerdown="car('B')"
+        onpointerup="car('S')">
+        ▼
+      </button>
+
+      <span></span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- MIC PANEL -->
+
+<section
+  id="micPanel"
+  class="panel">
+
+  <div class="panel-head">
+
+    <button
+      class="back"
+      onclick="goHome()">
+      ← BACK
+    </button>
+
+    <h2 class="panel-title">
+      CAR + CAMERA + MIC
+    </h2>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      CAMERA
+    </h3>
+
+    <div class="row">
+
+      <input
+        class="input"
+        id="cam2"
+        placeholder="A9 camera stream URL">
+
+      <button
+        class="btn"
+        onclick="loadCamera('cam2','view2')">
+        OPEN
+      </button>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="camera">
+
+      <img id="view2">
+
+      <span
+        id="ct2"
+        class="camtext">
+        CAMERA STANDBY
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      MICROPHONE
+    </h3>
+
+    <button
+      class="btn"
+      onclick="startMic()">
+      🎤 START MIC
+    </button>
+
+    <button
+      class="btn"
+      onclick="stopMic()">
+      STOP
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- WHOLE SYSTEM -->
+
+<section
+  id="systemPanel"
+  class="panel">
+
+  <div class="panel-head">
+
+    <button
+      class="back"
+      onclick="goHome()">
+      ← BACK
+    </button>
+
+    <h2 class="panel-title">
+      WHOLE SYSTEM CONTROL
+    </h2>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      ESP8266
+    </h3>
+
+    <div class="row">
+
+      <input
+        class="input"
+        id="robot3"
+        value="http://192.168.4.1">
+
+      <button
+        class="btn"
+        onclick="connect('robot3')">
+        CONNECT
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      CAMERA
+    </h3>
+
+    <div class="row">
+
+      <input
+        class="input"
+        id="cam3"
+        placeholder="A9 camera stream URL">
+
+      <button
+        class="btn"
+        onclick="loadCamera('cam3','view3')">
+        OPEN
+      </button>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="camera">
+
+      <img id="view3">
+
+      <span
+        id="ct3"
+        class="camtext">
+        CAMERA STANDBY
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      CAR CONTROL
+    </h3>
+
+    <div class="car">
+
+      <span></span>
+
+      <button
+        onpointerdown="car('F')"
+        onpointerup="car('S')">
+        ▲
+      </button>
+
+      <span></span>
+
+      <button
+        onpointerdown="car('L')"
+        onpointerup="car('S')">
+        ◀
+      </button>
+
+      <button onclick="car('S')">
+        ■
+      </button>
+
+      <button
+        onpointerdown="car('R')"
+        onpointerup="car('S')">
+        ▶
+      </button>
+
+      <span></span>
+
+      <button
+        onpointerdown="car('B')"
+        onpointerup="car('S')">
+        ▼
+      </button>
+
+      <span></span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer class="footer">
+
+  <div>
+    WiFi <span>READY</span>
+  </div>
+
+  <div>
+    ESP8266 <span>READY</span>
+  </div>
+
+  <div>
+    JARVIS P.WEB <span>v1.0.0</span>
+  </div>
+
+  <div>
+    TIME <span id="clock">--:--</span>
+  </div>
+
 </footer>
 
+</div>
 
-<script src="app.js"></script>
+
+<script>
+
+let ROBOT_URL =
+  "http://192.168.4.1";
+
+let micStream = null;
+
+
+/* LOG */
+
+function addLog(text){
+
+  const log =
+    document.getElementById("log");
+
+  log.innerHTML +=
+    "[" +
+    new Date().toLocaleTimeString() +
+    "] " +
+    text +
+    "<br>";
+
+  log.scrollTop =
+    log.scrollHeight;
+}
+
+
+/* PANELS */
+
+function openPanel(id){
+
+  document
+    .getElementById("home")
+    .style.display = "none";
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(
+      p => p.classList.remove("active")
+    );
+
+  document
+    .getElementById(id)
+    .classList.add("active");
+
+  addLog("Panel opened");
+}
+
+
+function goHome(){
+
+  car("S");
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(
+      p => p.classList.remove("active")
+    );
+
+  document
+    .getElementById("home")
+    .style.display = "block";
+
+  addLog("Returned to home");
+}
+
+
+/* CONNECT */
+
+async function connect(id){
+
+  ROBOT_URL =
+    document
+      .getElementById(id)
+      .value
+      .trim()
+      .replace(/\/+$/,"");
+
+  addLog(
+    "Connecting to " +
+    ROBOT_URL
+  );
+
+  try{
+
+    const response =
+      await fetch(
+        ROBOT_URL +
+        "/ping",
+        {
+          cache:"no-store"
+        }
+      );
+
+    if(!response.ok)
+      throw new Error();
+
+    addLog(
+      "ESP8266 ONLINE"
+    );
+
+  }catch{
+
+    addLog(
+      "Connection failed"
+    );
+
+  }
+
+}
+
+
+/* CAR */
+
+async function car(command){
+
+  try{
+
+    await fetch(
+      ROBOT_URL +
+      "/?State=" +
+      command,
+      {
+        cache:"no-store"
+      }
+    );
+
+    addLog(
+      "CAR: " +
+      command
+    );
+
+  }catch{
+
+    addLog(
+      "Car command failed"
+    );
+
+  }
+
+}
+
+
+/* CAMERA */
+
+function loadCamera(
+  inputId,
+  imageId
+){
+
+  const url =
+    document
+      .getElementById(inputId)
+      .value
+      .trim();
+
+  if(!url){
+
+    addLog(
+      "Camera URL required"
+    );
+
+    return;
+  }
+
+  document
+    .getElementById(imageId)
+    .src = url;
+
+  const n =
+    imageId.replace("view","");
+
+  document
+    .getElementById("ct"+n)
+    .style.display = "none";
+
+  addLog(
+    "Camera stream loaded"
+  );
+
+}
+
+
+/* MIC */
+
+async function startMic(){
+
+  try{
+
+    micStream =
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+          audio:true
+        });
+
+    addLog(
+      "Microphone active"
+    );
+
+  }catch{
+
+    addLog(
+      "Microphone permission denied"
+    );
+
+  }
+
+}
+
+
+function stopMic(){
+
+  if(micStream){
+
+    micStream
+      .getTracks()
+      .forEach(
+        track => track.stop()
+      );
+
+  }
+
+  micStream = null;
+
+  addLog(
+    "Microphone stopped"
+  );
+
+}
+
+
+/* KEYBOARD */
+
+const keys = {
+
+  ArrowUp:"F",
+  ArrowDown:"B",
+  ArrowLeft:"L",
+  ArrowRight:"R",
+
+  w:"F",
+  W:"F",
+
+  s:"B",
+  S:"B",
+
+  a:"L",
+  A:"L",
+
+  d:"R",
+  D:"R"
+
+};
+
+
+document.addEventListener(
+  "keydown",
+  function(e){
+
+    if(e.repeat)
+      return;
+
+    if(keys[e.key]){
+
+      e.preventDefault();
+
+      car(
+        keys[e.key]
+      );
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keyup",
+  function(e){
+
+    if(keys[e.key])
+      car("S");
+
+  }
+);
+
+
+/* SAFETY STOP */
+
+window.addEventListener(
+  "blur",
+  function(){
+    car("S");
+  }
+);
+
+
+/* CLOCK */
+
+function updateClock(){
+
+  document
+    .getElementById("clock")
+    .textContent =
+    new Date()
+      .toLocaleTimeString();
+
+}
+
+setInterval(
+  updateClock,
+  1000
+);
+
+
+/* START */
+
+addLog(
+  "JARVIS P.WEB ONLINE"
+);
+
+addLog(
+  "Waiting for user input..."
+);
+
+addLog(
+  "System Ready."
+);
+
+</script>
 
 </body>
 </html>
