@@ -1,35 +1,38 @@
 // =====================================================
-// JARVIS P.WEB v0.5
-// UNIVERSAL ROBOT CONTROLLER
+// JARVIS P.WEB
+// ORIGINAL UI + ESP8266 CAR + SERVO SUPPORT
 // =====================================================
 
+// =========================
+// CONNECTION
+// =========================
 
-// =====================================================
-// ROBOT ADDRESS
-// =====================================================
+let ROBOT_URL = "http://192.168.4.1";
 
-let ROBOT_URL = "";
+// ESP8266 = car + Arduino UNO bridge
+let ESP8266_URL = "http://192.168.4.1";
 
+// Optional ESP32
+let ESP32_URL = "";
 
-// Camera will later use the user's own camera ESP32.
-
-let CAMERA_URL = "";
-
+// Camera stream - fill later when A9 URL is known
 let CAMERA_STREAM_URL = "";
 
-const CAMERA_COMMAND_PATH = "/camera";
+// Camera/servo controller
+let CAMERA_URL = ESP8266_URL;
+
+const CAMERA_COMMAND_PATH = "/servo";
 
 
-// JARVIS Communication Core
+// =========================
+// JARVIS CORE
+// =========================
 
-const CORE_URL =
-  "http://192.168.1.9:8000";
-
+const CORE_URL = "http://192.168.1.9:8000";
 
 let sessionId =
   globalThis.crypto?.randomUUID?.() ||
   String(Date.now());
-
 
 let sensorTimer = null;
 
@@ -40,32 +43,32 @@ let sensorTimer = null;
 
 const modes = {
 
-  CAR:{
-    title:"CAR CONTROL",
-    camera:false,
-    mic:false,
-    sensor:false
+  CAR: {
+    title: "CAR CONTROL",
+    camera: false,
+    mic: false,
+    sensor: false
   },
 
-  CAMERA:{
-    title:"CAR CONTROL / CAMERA",
-    camera:true,
-    mic:false,
-    sensor:false
+  CAMERA: {
+    title: "CAR CONTROL / CAMERA",
+    camera: true,
+    mic: false,
+    sensor: false
   },
 
-  MIC:{
-    title:"CAR CONTROL / CAMERA / MIC",
-    camera:true,
-    mic:true,
-    sensor:false
+  MIC: {
+    title: "CAR CONTROL / CAMERA / MIC",
+    camera: true,
+    mic: true,
+    sensor: false
   },
 
-  SENSOR:{
-    title:"FULL ROBOT SYSTEM",
-    camera:true,
-    mic:true,
-    sensor:true
+  SENSOR: {
+    title: "FULL ROBOT SYSTEM",
+    camera: true,
+    mic: true,
+    sensor: true
   }
 
 };
@@ -75,9 +78,9 @@ const modes = {
 // DEVICE INFO
 // =====================================================
 
-function getDeviceInfo(){
+function getDeviceInfo() {
 
-  return{
+  return {
 
     platform:
       navigator.platform || "Unknown",
@@ -107,40 +110,36 @@ function getDeviceInfo(){
 // CORE EVENT
 // =====================================================
 
-async function sendEvent(
-  event,
-  mode=null
-){
+async function sendEvent(event, mode = null) {
 
-  try{
+  try {
 
     await fetch(
       `${CORE_URL}/event`,
       {
-        method:"POST",
+        method: "POST",
 
-        headers:{
+        headers: {
           "Content-Type":
             "application/json"
         },
 
-        body:
-          JSON.stringify({
+        body: JSON.stringify({
 
-            source:"P.WEB",
+          source: "P.WEB",
 
-            event,
+          event,
 
-            mode,
+          mode,
 
-            device:
-              getDeviceInfo()
+          device:
+            getDeviceInfo()
 
-          })
+        })
       }
     );
 
-  }catch{
+  } catch {
 
     console.log(
       "Communication Core unavailable."
@@ -155,7 +154,7 @@ async function sendEvent(
 // ROBOT ADDRESS
 // =====================================================
 
-function getRobotAddress(){
+function getRobotAddress() {
 
   const select =
     document.getElementById(
@@ -167,41 +166,38 @@ function getRobotAddress(){
       "customRobotAddress"
     );
 
+  // If old HTML has no selector,
+  // automatically use ESP8266.
 
-  if(
-    select.value === "CUSTOM"
-  ){
+  if (!select) {
+    return ESP8266_URL;
+  }
+
+  if (select.value === "CUSTOM") {
 
     let value =
-      custom.value.trim();
+      custom?.value.trim() || "";
 
-
-    if(!value){
-
+    if (!value) {
       return "";
-
     }
 
-
-    if(
+    if (
       !value.startsWith("http://") &&
       !value.startsWith("https://")
-    ){
+    ) {
 
       value =
         "http://" + value;
 
     }
 
-
-    return value
-      .replace(/\/+$/,"");
+    return value.replace(/\/+$/, "");
 
   }
 
-
   return select.value
-    .replace(/\/+$/,"");
+    .replace(/\/+$/, "");
 
 }
 
@@ -212,7 +208,7 @@ function getRobotAddress(){
 
 document.addEventListener(
   "DOMContentLoaded",
-  function(){
+  function () {
 
     const select =
       document.getElementById(
@@ -224,23 +220,26 @@ document.addEventListener(
         "customRobotAddress"
       );
 
+    if (!select) {
+      return;
+    }
 
-    select?.addEventListener(
+    select.addEventListener(
       "change",
-      function(){
+      function () {
 
-        if(
+        if (
           select.value === "CUSTOM"
-        ){
+        ) {
 
-          custom.classList
+          custom?.classList
             .remove("hidden");
 
-          custom.focus();
+          custom?.focus();
 
-        }else{
+        } else {
 
-          custom.classList
+          custom?.classList
             .add("hidden");
 
         }
@@ -256,11 +255,10 @@ document.addEventListener(
 // CONNECT ROBOT
 // =====================================================
 
-async function connectRobot(){
+async function connectRobot() {
 
-  const address =
+  let address =
     getRobotAddress();
-
 
   const status =
     document.getElementById(
@@ -272,78 +270,78 @@ async function connectRobot(){
       "headerStatus"
     );
 
+  // Fallback to ESP8266
+  if (!address) {
 
-  if(!address){
-
-    status.textContent =
-      "ENTER A ROBOT ADDRESS";
-
-    return;
+    address =
+      ESP8266_URL;
 
   }
 
-
   ROBOT_URL =
-    address;
+    address.replace(/\/+$/, "");
 
+  if (status) {
+    status.textContent =
+      "CONNECTING...";
+  }
 
-  status.textContent =
-    "CONNECTING...";
+  if (header) {
+    header.textContent =
+      "CONNECTING";
+  }
 
-
-  header.textContent =
-    "CONNECTING";
-
-
-  try{
+  try {
 
     const response =
       await fetch(
         `${ROBOT_URL}/`,
         {
-          method:"GET",
-          cache:"no-store"
+          method: "GET",
+          cache: "no-store"
         }
       );
 
-
-    if(!response.ok){
-
+    if (!response.ok) {
       throw new Error(
-        "Robot did not respond."
+        "Robot did not respond"
       );
+    }
+
+    if (status) {
+
+      status.textContent =
+        `ROBOT ONLINE — ${ROBOT_URL}`;
 
     }
 
-
-    status.textContent =
-      `ROBOT ONLINE — ${ROBOT_URL}`;
-
-
-    header.textContent =
-      "ROBOT ONLINE";
-
+    if (header) {
+      header.textContent =
+        "ROBOT ONLINE";
+    }
 
     sendEvent(
       "ROBOT_CONNECTED"
     );
-
 
     console.log(
       "JARVIS ROBOT:",
       ROBOT_URL
     );
 
+  } catch (error) {
 
-  }catch(error){
+    if (status) {
 
-    status.textContent =
-      `ROBOT NOT DETECTED — ${ROBOT_URL}`;
+      status.textContent =
+        `ROBOT NOT DETECTED — ${ROBOT_URL}`;
 
+    }
 
-    header.textContent =
-      "OFFLINE";
-
+    if (header) {
+      header.textContent =
+        "OFFLINE";
+    }
 
     console.log(
       "Robot connection failed:",
@@ -358,13 +356,8 @@ async function connectRobot(){
 // =====================================================
 // AUTO SCAN
 // =====================================================
-//
-// Browser security may prevent some addresses from
-// being scanned from a public HTTPS page.
-// Therefore this is a best-effort scanner.
-// =====================================================
 
-async function autoScanRobot(){
+async function autoScanRobot() {
 
   const scanStatus =
     document.getElementById(
@@ -381,26 +374,27 @@ async function autoScanRobot(){
       "headerStatus"
     );
 
+  if (scanStatus) {
+    scanStatus.textContent =
+      "SCANNING...";
+  }
 
-  scanStatus.textContent =
-    "SCANNING COMMON ROBOT ADDRESSES...";
+  if (robotStatus) {
+    robotStatus.textContent =
+      "AUTO SCAN ACTIVE";
+  }
 
+  if (header) {
+    header.textContent =
+      "SCANNING";
+  }
 
-  robotStatus.textContent =
-    "AUTO SCAN ACTIVE";
-
-
-  header.textContent =
-    "SCANNING";
-
-
+  // ESP8266 first
   const addresses = [
 
     "http://192.168.4.1",
     "http://192.168.4.2",
     "http://192.168.4.3",
-    "http://192.168.4.10",
-    "http://192.168.4.20",
 
     "http://192.168.1.1",
     "http://192.168.1.100",
@@ -411,97 +405,106 @@ async function autoScanRobot(){
 
   ];
 
-
-  for(
+  for (
     const address of addresses
-  ){
+  ) {
 
-    scanStatus.textContent =
-      `TESTING ${address}...`;
+    if (scanStatus) {
 
+      scanStatus.textContent =
+        `TESTING ${address}...`;
 
-    try{
+    }
+
+    try {
 
       const controller =
         new AbortController();
 
-
       const timeout =
         setTimeout(
           () => controller.abort(),
-          700
+          1000
         );
-
 
       const response =
         await fetch(
-          `${address}/`,
+          `${address}/ping`,
           {
-            method:"GET",
-            cache:"no-store",
+            method: "GET",
+            cache: "no-store",
             signal:
               controller.signal
           }
         );
 
-
       clearTimeout(timeout);
 
-
-      if(response.ok){
+      if (response.ok) {
 
         ROBOT_URL =
           address;
 
-
-        document
-          .getElementById(
-            "robotAddress"
-          )
-          .value =
+        ESP8266_URL =
           address;
 
+        const select =
+          document.getElementById(
+            "robotAddress"
+          );
 
-        robotStatus.textContent =
-          `ROBOT FOUND — ${address}`;
+        if (select) {
+          select.value =
+            address;
+        }
 
+        if (robotStatus) {
 
-        header.textContent =
-          "ROBOT ONLINE";
+          robotStatus.textContent =
+            `ROBOT FOUND — ${address}`;
 
+        }
 
-        scanStatus.textContent =
-          "AUTO SCAN COMPLETE";
+        if (header) {
+          header.textContent =
+            "ROBOT ONLINE";
+        }
 
+        if (scanStatus) {
+          scanStatus.textContent =
+            "AUTO SCAN COMPLETE";
+        }
 
         sendEvent(
           "ROBOT_AUTO_DETECTED"
         );
 
-
         return;
 
       }
 
-    }catch{
+    } catch {
 
-      // Continue scanning.
+      // continue
 
     }
 
   }
 
+  if (robotStatus) {
+    robotStatus.textContent =
+      "NO ROBOT FOUND";
+  }
 
-  robotStatus.textContent =
-    "NO ROBOT FOUND";
+  if (header) {
+    header.textContent =
+      "WAITING";
+  }
 
-
-  header.textContent =
-    "WAITING";
-
-
-  scanStatus.textContent =
-    "AUTO SCAN COMPLETE — NO ROBOT DETECTED";
+  if (scanStatus) {
+    scanStatus.textContent =
+      "AUTO SCAN COMPLETE — NO ROBOT DETECTED";
+  }
 
 }
 
@@ -510,35 +513,36 @@ async function autoScanRobot(){
 // MODE
 // =====================================================
 
-function selectMode(mode){
+function selectMode(mode) {
 
   const selected =
     modes[mode];
 
-
-  if(!selected)
+  if (!selected) {
     return;
-
+  }
 
   document
     .getElementById("modeScreen")
     ?.classList
     .remove("active");
 
-
   document
     .getElementById("controlScreen")
     ?.classList
     .add("active");
 
-
-  document
-    .getElementById(
+  const title =
+    document.getElementById(
       "selectedModeTitle"
-    )
-    .textContent =
-    selected.title;
+    );
 
+  if (title) {
+
+    title.textContent =
+      selected.title;
+
+  }
 
   document
     .getElementById("cameraPanel")
@@ -548,7 +552,6 @@ function selectMode(mode){
       !selected.camera
     );
 
-
   document
     .getElementById("micPanel")
     ?.classList
@@ -556,7 +559,6 @@ function selectMode(mode){
       "hidden",
       !selected.mic
     );
-
 
   document
     .getElementById("sensorPanel")
@@ -566,28 +568,25 @@ function selectMode(mode){
       !selected.sensor
     );
 
-
-  if(selected.camera){
+  if (selected.camera) {
 
     setupCamera();
 
-  }else{
+  } else {
 
     stopCamera();
 
   }
 
-
-  if(selected.sensor){
+  if (selected.sensor) {
 
     startSensors();
 
-  }else{
+  } else {
 
     stopSensors();
 
   }
-
 
   sendEvent(
     "MODE_SELECTED",
@@ -601,7 +600,7 @@ function selectMode(mode){
 // BACK
 // =====================================================
 
-function goBack(){
+function goBack() {
 
   stopCar();
 
@@ -609,18 +608,15 @@ function goBack(){
 
   stopSensors();
 
-
   document
     .getElementById("controlScreen")
     ?.classList
     .remove("active");
 
-
   document
     .getElementById("modeScreen")
     ?.classList
     .add("active");
-
 
   sendEvent(
     "CONTROL_SCREEN_CLOSED"
@@ -633,96 +629,109 @@ function goBack(){
 // CAR COMMAND
 // =====================================================
 
-async function sendCarCommand(
-  command
-){
+async function sendCarCommand(command) {
 
-  const allowed =
-    [
-      "F",
-      "B",
-      "L",
-      "R",
-      "S"
-    ];
+  const allowed = [
+    "F",
+    "B",
+    "L",
+    "R",
+    "S"
+  ];
 
-
-  if(!allowed.includes(command))
+  if (
+    !allowed.includes(command)
+  ) {
     return;
+  }
 
+  if (!ROBOT_URL) {
 
-  if(!ROBOT_URL){
-
-    console.log(
-      "Robot not connected."
-    );
-
-    return;
+    ROBOT_URL =
+      ESP8266_URL;
 
   }
 
-
   const buttonMap = {
 
-    F:"btn-F",
-    B:"btn-B",
-    L:"btn-L",
-    R:"btn-R",
-    S:"btn-S"
+    F: "btn-F",
+    B: "btn-B",
+    L: "btn-L",
+    R: "btn-R",
+    S: "btn-S"
 
   };
-
 
   const button =
     document.getElementById(
       buttonMap[command]
     );
 
-
-  if(button){
+  if (button) {
 
     button.classList
       .add("active-key");
 
-
     setTimeout(
-      () =>
-        button.classList
-          .remove("active-key"),
+      () => {
 
+        button.classList
+          .remove("active-key");
+
+      },
       120
     );
 
   }
 
+  try {
 
-  try{
+    // EXACT ESP8266 API
+    const url =
+      `${ROBOT_URL}/?State=${encodeURIComponent(command)}`;
 
     const response =
       await fetch(
-        `${ROBOT_URL}/?State=${command}`,
+        url,
         {
-          method:"GET",
-          cache:"no-store"
+          method: "GET",
+          cache: "no-store"
         }
       );
 
+    if (!response.ok) {
 
-    if(!response.ok)
       throw new Error(
-        "Robot rejected command."
+        `HTTP ${response.status}`
       );
 
-
-  }catch(error){
+    }
 
     console.log(
-      "Robot command failed:",
+      "CAR:",
+      command
+    );
+
+  } catch (error) {
+
+    console.error(
+      "CAR COMMAND FAILED:",
       error
     );
 
-  }
+    const status =
+      document.getElementById(
+        "robotStatus"
+      );
 
+    if (status) {
+
+      status.textContent =
+        "CAR CONNECTION FAILED";
+
+    }
+
+  }
 
   sendEvent(
     "CAR_COMMAND",
@@ -732,9 +741,13 @@ async function sendCarCommand(
 }
 
 
-function stopCar(){
+// =====================================================
+// STOP
+// =====================================================
 
-  if(ROBOT_URL){
+function stopCar() {
+
+  if (ROBOT_URL) {
 
     sendCarCommand("S");
 
@@ -744,38 +757,38 @@ function stopCar(){
 
 
 // =====================================================
-// CAR HOLD CONTROLS
+// CAR BUTTONS
 // =====================================================
 
 const movementButtons = {
 
-  "btn-F":"F",
-  "btn-B":"B",
-  "btn-L":"L",
-  "btn-R":"R"
+  "btn-F": "F",
+  "btn-B": "B",
+  "btn-L": "L",
+  "btn-R": "R"
 
 };
 
 
-function setupMovementControls(){
+function setupMovementControls() {
 
   Object.entries(
     movementButtons
   ).forEach(
-    ([id,command]) => {
+    ([id, command]) => {
 
       const button =
         document.getElementById(id);
 
-
-      if(!button ||
-         button.dataset.ready)
+      if (
+        !button ||
+        button.dataset.ready
+      ) {
         return;
-
+      }
 
       button.dataset.ready =
         "true";
-
 
       button.addEventListener(
         "pointerdown",
@@ -783,17 +796,12 @@ function setupMovementControls(){
 
           event.preventDefault();
 
-          button.setPointerCapture?.(
-            event.pointerId
-          );
-
           sendCarCommand(
             command
           );
 
         }
       );
-
 
       button.addEventListener(
         "pointerup",
@@ -806,12 +814,10 @@ function setupMovementControls(){
         }
       );
 
-
       button.addEventListener(
         "pointercancel",
         stopCar
       );
-
 
       button.addEventListener(
         "pointerleave",
@@ -825,27 +831,27 @@ function setupMovementControls(){
 
 
 // =====================================================
-// KEYBOARD
+// KEYBOARD CONTROL
 // =====================================================
 
 const keyMap = {
 
-  ArrowUp:"F",
-  ArrowDown:"B",
-  ArrowLeft:"L",
-  ArrowRight:"R",
+  ArrowUp: "F",
+  ArrowDown: "B",
+  ArrowLeft: "L",
+  ArrowRight: "R",
 
-  w:"F",
-  W:"F",
+  w: "F",
+  W: "F",
 
-  s:"B",
-  S:"B",
+  s: "B",
+  S: "B",
 
-  a:"L",
-  A:"L",
+  a: "L",
+  A: "L",
 
-  d:"R",
-  D:"R"
+  d: "R",
+  D: "R"
 
 };
 
@@ -854,11 +860,11 @@ document.addEventListener(
   "keydown",
   event => {
 
-    if(event.repeat)
+    if (event.repeat) {
       return;
+    }
 
-
-    if(event.key === " "){
+    if (event.key === " ") {
 
       event.preventDefault();
 
@@ -868,14 +874,12 @@ document.addEventListener(
 
     }
 
-
     const command =
       keyMap[event.key];
 
-
-    if(!command)
+    if (!command) {
       return;
-
+    }
 
     event.preventDefault();
 
@@ -891,7 +895,9 @@ document.addEventListener(
   "keyup",
   event => {
 
-    if(keyMap[event.key]){
+    if (
+      keyMap[event.key]
+    ) {
 
       stopCar();
 
@@ -910,12 +916,11 @@ window.addEventListener(
   stopCar
 );
 
-
 document.addEventListener(
   "visibilitychange",
   () => {
 
-    if(document.hidden){
+    if (document.hidden) {
 
       stopCar();
 
@@ -926,174 +931,82 @@ document.addEventListener(
 
 
 // =====================================================
-// CAMERA
-// =====================================================
-
-function setupCamera(){
-
-  const feed =
-    document.getElementById(
-      "cameraFeed"
-    );
-
-  const screen =
-    document.querySelector(
-      ".camera-screen"
-    );
-
-  const state =
-    document.getElementById(
-      "cameraState"
-    );
-
-
-  if(!feed || !screen)
-    return;
-
-
-  if(!CAMERA_STREAM_URL){
-
-    screen.classList
-      .remove("live");
-
-
-    state.textContent =
-      "STANDBY";
-
-
-    return;
-
-  }
-
-
-  feed.onload =
-    () => {
-
-      screen.classList
-        .add("live");
-
-
-      state.textContent =
-        "LIVE";
-
-    };
-
-
-  feed.onerror =
-    () => {
-
-      screen.classList
-        .remove("live");
-
-
-      state.textContent =
-        "OFFLINE";
-
-    };
-
-
-  feed.src =
-    CAMERA_STREAM_URL;
-
-}
-
-
-function stopCamera(){
-
-  const feed =
-    document.getElementById(
-      "cameraFeed"
-    );
-
-  const screen =
-    document.querySelector(
-      ".camera-screen"
-    );
-
-  const state =
-    document.getElementById(
-      "cameraState"
-    );
-
-
-  if(feed){
-
-    feed.removeAttribute(
-      "src"
-    );
-
-  }
-
-
-  screen
-    ?.classList
-    .remove("live");
-
-
-  if(state){
-
-    state.textContent =
-      "STANDBY";
-
-  }
-
-}
-
-
-// =====================================================
-// CAMERA PAN / TILT
+// SERVO / CAMERA CONTROL
 // =====================================================
 
 async function sendCameraCommand(
   command
-){
+) {
 
   const status =
     document.getElementById(
       "cameraCommandStatus"
     );
 
+  if (!CAMERA_URL) {
 
-  if(!CAMERA_URL){
+    CAMERA_URL =
+      ROBOT_URL ||
+      ESP8266_URL;
 
-    status.textContent =
-      `CAMERA ${command} — ESP32 NOT CONNECTED`;
+  }
+
+  if (!CAMERA_URL) {
+
+    if (status) {
+      status.textContent =
+        "SERVO CONTROLLER OFFLINE";
+    }
 
     return;
 
   }
 
-
-  try{
+  try {
 
     const response =
       await fetch(
-        `${CAMERA_URL}${CAMERA_COMMAND_PATH}?cmd=${command}`,
+        `${CAMERA_URL}${CAMERA_COMMAND_PATH}?cmd=${encodeURIComponent(command)}`,
         {
-          method:"GET",
-          cache:"no-store"
+          method: "GET",
+          cache: "no-store"
         }
       );
 
-
-    if(!response.ok)
+    if (!response.ok) {
       throw new Error();
+    }
 
+    if (status) {
 
-    status.textContent =
-      `CAMERA SERVO: ${command}`;
+      status.textContent =
+        `SERVO: ${command}`;
 
+    }
 
-    sendEvent(
-      "CAMERA_COMMAND",
+    console.log(
+      "SERVO:",
       command
     );
 
+    sendEvent(
+      "SERVO_COMMAND",
+      command
+    );
 
-  }catch{
+  } catch (error) {
 
-    status.textContent =
-      "CAMERA SERVO OFFLINE";
+    if (status) {
+
+      status.textContent =
+        "SERVO OFFLINE";
+
+    }
+
+    console.error(
+      "SERVO ERROR:",
+      error
+    );
 
   }
 
@@ -1101,10 +1014,10 @@ async function sendCameraCommand(
 
 
 // =====================================================
-// CAMERA CONTROLS
+// CAMERA/SERVO BUTTONS
 // =====================================================
 
-function setupCameraControls(){
+function setupCameraControls() {
 
   document
     .querySelectorAll(
@@ -1113,47 +1026,40 @@ function setupCameraControls(){
     .forEach(
       button => {
 
-        if(button.dataset.ready)
+        if (button.dataset.ready) {
           return;
-
+        }
 
         button.dataset.ready =
           "true";
-
 
         const command =
           button.dataset
             .cameraCommand;
 
-
         let timer = null;
 
-
-        function start(event){
+        function start(event) {
 
           event.preventDefault();
-
-
-          button.setPointerCapture?.(
-            event.pointerId
-          );
-
 
           sendCameraCommand(
             command
           );
 
-
-          if(
+          if (
             command !== "CENTER"
-          ){
+          ) {
 
             timer =
               setInterval(
-                () =>
+                () => {
+
                   sendCameraCommand(
                     command
-                  ),
+                  );
+
+                },
                 180
               );
 
@@ -1161,14 +1067,12 @@ function setupCameraControls(){
 
         }
 
-
-        function stop(event){
+        function stop(event) {
 
           event
             ?.preventDefault?.();
 
-
-          if(timer){
+          if (timer) {
 
             clearInterval(
               timer
@@ -1176,29 +1080,24 @@ function setupCameraControls(){
 
           }
 
-
           timer = null;
 
         }
-
 
         button.addEventListener(
           "pointerdown",
           start
         );
 
-
         button.addEventListener(
           "pointerup",
           stop
         );
 
-
         button.addEventListener(
           "pointercancel",
           stop
         );
-
 
         button.addEventListener(
           "pointerleave",
@@ -1212,20 +1111,14 @@ function setupCameraControls(){
 
 
 // =====================================================
-// SENSORS
+// SENSOR SYSTEM
 // =====================================================
 
-function startSensors(){
+function startSensors() {
 
   stopSensors();
 
-
-  if(!CAMERA_URL)
-    return;
-
-
   updateSensors();
-
 
   sensorTimer =
     setInterval(
@@ -1236,9 +1129,9 @@ function startSensors(){
 }
 
 
-function stopSensors(){
+function stopSensors() {
 
-  if(sensorTimer){
+  if (sensorTimer) {
 
     clearInterval(
       sensorTimer
@@ -1246,104 +1139,148 @@ function stopSensors(){
 
   }
 
-
   sensorTimer = null;
 
 }
 
 
-async function updateSensors(){
+async function updateSensors() {
 
-  if(!CAMERA_URL)
+  const url =
+    ROBOT_URL ||
+    ESP8266_URL;
+
+  if (!url) {
     return;
+  }
 
-
-  try{
+  try {
 
     const response =
       await fetch(
-        `${CAMERA_URL}/sensors`,
+        `${url}/sensors`,
         {
-          cache:"no-store"
+          cache: "no-store"
         }
       );
 
-
-    if(!response.ok)
+    if (!response.ok) {
       throw new Error();
-
+    }
 
     const data =
       await response.json();
 
+    // Sensor 1
+    const s1 =
+      document.getElementById(
+        "sensor1"
+      );
 
-    if(
+    if (s1 && data.sensor1 != null) {
+
+      s1.textContent =
+        data.sensor1;
+
+    }
+
+    // Sensor 2
+    const s2 =
+      document.getElementById(
+        "sensor2"
+      );
+
+    if (s2 && data.sensor2 != null) {
+
+      s2.textContent =
+        data.sensor2;
+
+    }
+
+    // Existing distance card
+    const distance =
+      document.getElementById(
+        "sensor-distance"
+      );
+
+    if (
+      distance &&
       data.distance_cm != null
-    ){
+    ) {
 
-      document
-        .getElementById(
-          "sensor-distance"
-        )
-        .textContent =
+      distance.textContent =
         `${data.distance_cm} cm`;
 
     }
 
+    // Obstacle
+    const obstacle =
+      document.getElementById(
+        "sensor-obstacle"
+      );
 
-    if(
+    if (
+      obstacle &&
       data.obstacle != null
-    ){
+    ) {
 
-      document
-        .getElementById(
-          "sensor-obstacle"
-        )
-        .textContent =
+      obstacle.textContent =
         data.obstacle
           ? "YES"
           : "NO";
 
+    }
 
-      document
-        .getElementById(
-          "sensor-obstacle-state"
-        )
-        .textContent =
+    const obstacleState =
+      document.getElementById(
+        "sensor-obstacle-state"
+      );
+
+    if (
+      obstacleState &&
+      data.obstacle != null
+    ) {
+
+      obstacleState.textContent =
         data.obstacle
           ? "OBSTACLE"
           : "CLEAR";
 
     }
 
+    // Battery
+    const battery =
+      document.getElementById(
+        "sensor-battery"
+      );
 
-    if(
+    if (
+      battery &&
       data.battery_v != null
-    ){
+    ) {
 
-      document
-        .getElementById(
-          "sensor-battery"
-        )
-        .textContent =
+      battery.textContent =
         `${data.battery_v} V`;
 
     }
 
+    // System
+    const system =
+      document.getElementById(
+        "sensor-system"
+      );
 
-    if(data.system != null){
+    if (
+      system &&
+      data.system != null
+    ) {
 
-      document
-        .getElementById(
-          "sensor-system"
-        )
-        .textContent =
+      system.textContent =
         data.system;
 
     }
 
-
-  }catch{
+  } catch {
 
     console.log(
       "Sensor system waiting..."
@@ -1358,7 +1295,7 @@ async function updateSensors(){
 // MICROPHONE
 // =====================================================
 
-async function testBrowserMicrophone(){
+async function testBrowserMicrophone() {
 
   const status =
     document.getElementById(
@@ -1370,16 +1307,14 @@ async function testBrowserMicrophone(){
       "micText"
     );
 
-
-  try{
+  try {
 
     const stream =
       await navigator
         .mediaDevices
         .getUserMedia({
-          audio:true
+          audio: true
         });
-
 
     stream
       .getTracks()
@@ -1388,18 +1323,28 @@ async function testBrowserMicrophone(){
           track.stop()
       );
 
+    if (status) {
 
-    status.textContent =
-      "DEVICE MIC ACCESS OK";
+      status.textContent =
+        "DEVICE MIC ACCESS OK";
 
+    }
 
-    text.textContent =
-      "Microphone permission is working.";
+    if (text) {
 
-  }catch{
+      text.textContent =
+        "Microphone permission is working.";
 
-    status.textContent =
-      "MIC ACCESS DENIED";
+    }
+
+  } catch {
+
+    if (status) {
+
+      status.textContent =
+        "MIC ACCESS DENIED";
+
+    }
 
   }
 
@@ -1414,19 +1359,32 @@ window.addEventListener(
   "load",
   () => {
 
+    // Default ESP8266
+    ROBOT_URL =
+      ESP8266_URL;
+
+    CAMERA_URL =
+      ESP8266_URL;
+
     setupMovementControls();
 
     setupCameraControls();
 
-
     console.log(
-      "JARVIS P.WEB v0.5 ONLINE"
+      "JARVIS P.WEB ONLINE"
     );
 
+    console.log(
+      "ESP8266:",
+      ESP8266_URL
+    );
 
     sendEvent(
       "PWEB_OPENED"
     );
+
+    // Automatically test ESP8266
+    connectRobot();
 
   }
 );
